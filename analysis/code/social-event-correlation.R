@@ -25,18 +25,24 @@ event_all_tbl <-
 event_all_tbl_tally <-
 event_all_tbl %>%
   group_by(year) %>%
-  tally(sort = TRUE)
+  tally(sort = TRUE) %>%
+  full_join(
+  tibble(year = seq(min(event_all_tbl_tally$year),
+                    max(event_all_tbl_tally$year),
+                    1))
+  )
 
 # visualise
 gg <-
 ggplot(event_all_tbl) +
   aes(year) +
   geom_histogram(binwidth = 1) +
-  theme_minimal() +
+  theme_bw(base_size = 8) +
   labs(x = "Year",
-       y = "Number of events",
-       title = "Histogram of events from Wikipedia's 'Timeline of African-American history'",
-       subtitle = "data from https://en.wikipedia.org/wiki/Timeline_of_African-American_history")
+       y = "African-American historical\nevent annual frequency"
+      # title = "Histogram of events from Wikipedia's 'Timeline of African-American history'",
+      # subtitle = "data from https://en.wikipedia.org/wiki/Timeline_of_African-American_history"
+       )
 
 gg
 
@@ -87,24 +93,45 @@ saa_words_per_year <-
 saa_and_history_tbl <-
   event_all_tbl_tally %>%
   left_join(saa_words_per_year) %>%
-  drop_na %>%
-  mutate(`Social event annual frequency` = n,
-         `SAA abstract word frequency` = saa_wordcount)
-
+  arrange(year) %>%
+  mutate(
+    `Same year` = saa_wordcount,
+    `1 year lag` = lag(saa_wordcount),
+    `2 year lag` = lag(saa_wordcount, 2),
+    `3 year lag` = lag(saa_wordcount, 3),
+    `4 year lag` = lag(saa_wordcount, 4),
+    `5 year lag` = lag(saa_wordcount, 5)) %>%
+  select(-saa_wordcount)  %>%
+  pivot_longer(-c(year, n)) %>%
+  mutate(name = factor(name,
+                       levels = c("Same year",
+                                  "1 year lag",
+                                  "2 year lag",
+                                  "3 year lag",
+                                  "4 year lag",
+                                  "5 year lag")))
 # scatter plot
 library(ggpubr)
+sp <-
 ggplot(saa_and_history_tbl) +
-  aes(`Social event annual frequency`,
-      `SAA abstract word frequency`) +
-  geom_point(size = 4) +
+  aes(n,
+      value) +
+  geom_point(size = 2) +
   geom_smooth(se = FALSE,
               method = "lm") +
   stat_cor(label.y = 75,
            label.x = 12,
-           size = 5) +
+           size = 4) +
   stat_regline_equation(label.y = 65,
                         label.x = 12,
-                        size = 5) +
-  theme_minimal(base_size = 14)
+                        size = 4) +
+  theme_bw(base_size = 12) +
+  labs(x = "African-American historical event annual frequency",
+       y = "Mentions of 'race', etc. in SAA abstracts") +
+  facet_wrap( ~ name)
 
+# put both plots together
+library(patchwork)
+gg + sp + plot_layout(ncol = 1,
+                      heights = c(0.3, 1))
 
