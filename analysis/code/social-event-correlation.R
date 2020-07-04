@@ -25,12 +25,17 @@ event_all_tbl <-
 event_all_tbl_tally <-
 event_all_tbl %>%
   group_by(year) %>%
-  tally(sort = TRUE) %>%
+  tally(sort = TRUE)
+
+event_all_tbl_tally <-
+event_all_tbl_tally %>%
   full_join(
   tibble(year = seq(min(event_all_tbl_tally$year),
                     max(event_all_tbl_tally$year),
                     1))
   )
+
+n_events = sum(event_all_tbl_tally$n, na.rm = TRUE)
 
 # visualise
 gg <-
@@ -39,7 +44,7 @@ ggplot(event_all_tbl) +
   geom_histogram(binwidth = 1) +
   theme_bw(base_size = 8) +
   labs(x = "Year",
-       y = "African-American historical\nevent annual frequency"
+       y = paste0("African-American\nhistorical event annual\nfrequency (n = ", n_events, ")")
       # title = "Histogram of events from Wikipedia's 'Timeline of African-American history'",
       # subtitle = "data from https://en.wikipedia.org/wiki/Timeline_of_African-American_history"
        )
@@ -69,9 +74,6 @@ all_text_c_dtm <-
       verbose = TRUE,
       remove_punct = TRUE)
 
-saveRDS(all_text_c_dtm,
-        here::here("analysis","data", "all_text_c_dtm.rds"))
-
 # Explore key words over time
 keywords <-
   c("race",
@@ -89,11 +91,29 @@ saa_words_per_year <-
   tibble(year = as.numeric(names(rowSums(dfm_keywords))),
          saa_wordcount = rowSums(dfm_keywords))
 
+n_words <- sum(saa_words_per_year$saa_wordcount, na.rm = TRUE )
+
+# visualise
+gg1 <-
+  ggplot(saa_words_per_year) +
+  aes(x = year,
+      y = saa_wordcount) +
+  geom_col() +
+  theme_bw(base_size = 8) +
+  labs(x = "Year",
+       y = paste0("SAA annual\nfrequency (n = ", n_words, ")")
+       # title = "Histogram of events from Wikipedia's 'Timeline of African-American history'",
+       # subtitle = "data from https://en.wikipedia.org/wiki/Timeline_of_African-American_history"
+  )
+
+gg1
+
 # join SAA and history data
 saa_and_history_tbl <-
   event_all_tbl_tally %>%
-  left_join(saa_words_per_year) %>%
+  right_join(saa_words_per_year) %>%
   arrange(year) %>%
+  replace_na(list(n = 0, saa_wordcount = 0)) %>%
   mutate(
     `Same year` = saa_wordcount,
     `1 year lag` = lag(saa_wordcount),
@@ -116,18 +136,19 @@ sp <-
 ggplot(saa_and_history_tbl) +
   aes(n,
       value) +
-  geom_point(size = 2) +
+  geom_text(aes(label = year),
+            size = 2) +
   geom_smooth(se = FALSE,
               method = "lm") +
   stat_cor(label.y = 75,
-           label.x = 12,
-           size = 4) +
+           label.x = 8,
+           size = 3) +
   stat_regline_equation(label.y = 65,
-                        label.x = 12,
-                        size = 4) +
+                        label.x = 8,
+                        size = 3) +
   theme_bw(base_size = 12) +
-  labs(x = "African-American historical event annual frequency",
-       y = "Mentions of 'race', etc. in SAA abstracts") +
+  labs(x = paste0("African-American historical event annual frequency (n = ", n_events, ")"),
+       y = paste0("Mentions of 'race', etc. in SAA abstracts (n = ", n_words, ")")) +
   facet_wrap( ~ name)
 
 # put both plots together
