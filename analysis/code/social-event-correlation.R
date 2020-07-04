@@ -92,6 +92,7 @@ saa_words_per_year <-
          saa_wordcount = rowSums(dfm_keywords))
 
 n_words <- sum(saa_words_per_year$saa_wordcount, na.rm = TRUE )
+n_abstracts <- length(rowSums(dfm_keywords))
 
 # visualise
 gg1 <-
@@ -120,16 +121,28 @@ saa_and_history_tbl <-
     `2 year lag` = lag(saa_wordcount, 2),
     `3 year lag` = lag(saa_wordcount, 3),
     `4 year lag` = lag(saa_wordcount, 4),
-    `5 year lag` = lag(saa_wordcount, 5)) %>%
-  select(-saa_wordcount)  %>%
+    `5 year lag` = lag(saa_wordcount, 5),
+    `6 year lag` = lag(saa_wordcount, 6)
+    ) %>%
+  select(-saa_wordcount,
+         -`Same year`)  %>%
   pivot_longer(-c(year, n)) %>%
   mutate(name = factor(name,
-                       levels = c("Same year",
+                       levels = c(
                                   "1 year lag",
                                   "2 year lag",
                                   "3 year lag",
                                   "4 year lag",
-                                  "5 year lag")))
+                                  "5 year lag",
+                                  "6 year lag")))
+
+# African-American events on the scatterplot
+n_events_subset <-
+saa_and_history_tbl %>%
+  distinct(year, n) %>%
+  pull(n) %>%
+  sum()
+
 # scatter plot
 library(ggpubr)
 sp <-
@@ -147,8 +160,8 @@ ggplot(saa_and_history_tbl) +
                         label.x = 8,
                         size = 3) +
   theme_bw(base_size = 12) +
-  labs(x = paste0("African-American historical event annual frequency (n = ", n_events, ")"),
-       y = paste0("Mentions of 'race', etc. in SAA abstracts (n = ", n_words, ")")) +
+  labs(x = paste0("African-American historical event annual frequency (n = ", n_events_subset, ")"),
+       y = paste0("Mentions of 'race', etc. (n = ", n_words, ")\nin SAA abstracts (n = ", n_abstracts, ")")) +
   facet_wrap( ~ name)
 
 # put both plots together
