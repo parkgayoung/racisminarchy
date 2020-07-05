@@ -17,9 +17,6 @@ all_text_c_dtm <-
       verbose = TRUE,
       remove_punct = TRUE)
 
-saveRDS(all_text_c_dtm,
-        here::here("analysis","data", "all_text_c_dtm.rds"))
-
 # Explore key words over time
 keywords <-
   c("race",
@@ -56,6 +53,11 @@ ggplot(data = dfm_keywords_tbl,
   theme(axis.text.x = element_text(angle = 90,
                                    vjust = 0.5))
 
+# count all words for each year
+all_text_c_summary <-
+  summary(all_text_c) %>%
+  mutate(year = parse_number(Text))
+
 # compute proportion of all words per year and sum up the keywords
 dfm_keywords_tbl_prop <-
   dfm_keywords_tbl %>%
@@ -64,7 +66,6 @@ dfm_keywords_tbl_prop <-
   group_by(keyword) %>%
   mutate(sum_the_word = sum(n)) %>%
   mutate(keyword_n = str_c(keyword, " (n = ", sum_the_word, ")"))
-
 
 # plot of keywords as a proportion of all words per year
 ggplot(data = dfm_keywords_tbl_prop,
@@ -83,3 +84,30 @@ ggplot(data = dfm_keywords_tbl_prop,
   theme(axis.text.x = element_text(angle = 90,
                                    vjust = 0.5))
 
+# distances for specific documents for keyword
+dist_keywords <- textstat_dist(dfm_keywords,
+                               dfm_keywords[,"discrimination"],
+                               margin = "documents")
+
+dist_keywords_tbl <-
+  as.data.frame(dist_keywords, to = "data.frame")
+
+# compute similarities between features using relative frequency
+simi_all <-
+  dfm_weight(all_text_c_dtm, scheme = "prop") %>%
+  textstat_simil(selection = keywords,
+                 method = "correlation",
+                 margin = "features")
+
+head(as.matrix(simi_all), 10)
+as.list(simi_all, n = 10)
+
+# compute similarities between features
+simi_keywords <- textstat_simil(dfm_keywords,
+                                all_text_c_dtm[, c("black",
+                                                   "people",
+                                                   "african",
+                                                   "asian")],
+                                method = "correlation",
+                                margin = "features")
+head(as.matrix(simi_keywords), 10)
