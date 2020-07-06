@@ -43,7 +43,7 @@ all_text_c_dtm <-
 
 # check freq of race words
 featfreq_out <- featfreq(all_text_c_dtm)
-featfreq_out[names(featfreq_out) %in% c("race", "racism")]
+featfreq_out[names(featfreq_out) %in% c("race", "racism", "racial")]
 
 # keep only words occurring >= 10 times and in >= 2 documents
 all_text_c_dtm_trim <-
@@ -53,7 +53,7 @@ dfm_trim(all_text_c_dtm,
 
 # check freq of race words
 featfreq_out2 <- featfreq(all_text_c_dtm_trim)
-featfreq_out2[names(featfreq_out2) %in% c("race", "racism")]
+featfreq_out2[names(featfreq_out2) %in% c("race", "racism", "racial")]
 
 rm(featfreq_out2, featfreq_out)
 rm(all_text_c_dtm)

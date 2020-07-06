@@ -32,6 +32,8 @@ dfm_keywords <-
              pattern = keywords,
              selection = "keep")
 
+saveRDS(dfm_keywords, here::here("analysis","data","dfm_keywords.rds"))
+
 dfm_keywords_tbl <-
   convert(dfm_keywords, to = "data.frame") %>%
   pivot_longer(-document,
