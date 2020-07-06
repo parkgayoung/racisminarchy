@@ -105,7 +105,9 @@ head(as.matrix(simi_all), 10)
 as.list(simi_all, n = 10)
 
 # compute similarities between features
-simi_keywords <- textstat_simil(dfm_keywords,
+simi_keywords <-
+  dfm_weight(dfm_keywords, scheme = "prop") %>%
+  textstat_simil(selection = dfm_keywords,
                                 all_text_c_dtm[, c("black",
                                                    "people",
                                                    "african",
