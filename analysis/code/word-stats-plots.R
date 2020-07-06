@@ -21,9 +21,11 @@ all_text_c_dtm <-
 keywords <-
   c("race",
     "racism",
+    "racial",
     "discrimination",
     "inequality",
-    "inequalities")
+    "inequalities",
+    "racial")
 
 dfm_keywords <-
   dfm_select(all_text_c_dtm,
@@ -111,3 +113,86 @@ simi_keywords <- textstat_simil(dfm_keywords,
                                 method = "correlation",
                                 margin = "features")
 head(as.matrix(simi_keywords), 10)
+
+# read data from googlesheet
+library(googlesheets4)
+event <- read_sheet("https://docs.google.com/spreadsheets/d/1DXgcXOsD_1yLfJ9tyADZhQr3rOK6Y1yL_GDuGyYtUNs/edit?ts=5ef3e46a#gid=0")
+
+# tidy up
+event_tally <-
+  event %>%
+  group_by(`Start year`) %>%
+  count(`Start year`) %>%
+  filter(!is.na(`Start year`),
+         `Start year` > 1961) %>%
+  ungroup()
+
+n_major_events <- sum(event_tally$n, na.rm = TRUE )
+
+# visualize
+major_event <-
+  ggplot(event_tally) +
+  aes(`Start year`) +
+  geom_histogram() +
+  theme_minimal() +
+  labs(x = "Year",
+       y = paste0("African-American\nhistorical major event (n = ", n_major_events, ")")
+  )
+
+# saa word per year
+saa_words_per_year <-
+  tibble(year = as.numeric(names(rowSums(dfm_keywords))),
+         saa_wordcount = rowSums(dfm_keywords))
+
+# join SAA and history data
+saa_and_event_tbl <-
+  event_tally %>%
+  right_join(saa_words_per_year, by = c(`Start year` = "year")) %>%
+  arrange(`Start year`) %>%
+  replace_na(list(n = 0, saa_wordcount = 0)) %>%
+  mutate(
+    `Same year` = saa_wordcount,
+    `1 year lag` = lag(saa_wordcount),
+    `2 year lag` = lag(saa_wordcount, 2),
+    `3 year lag` = lag(saa_wordcount, 3),
+    `4 year lag` = lag(saa_wordcount, 4),
+    `5 year lag` = lag(saa_wordcount, 5),
+    `6 year lag` = lag(saa_wordcount, 6)) %>%
+  select(-saa_wordcount,
+         -`Same year`)  %>%
+  pivot_longer(-c(`Start year`, n)) %>%
+  mutate(name = factor(name,
+                       levels = c(
+                         "1 year lag",
+                         "2 year lag",
+                         "3 year lag",
+                         "4 year lag",
+                         "5 year lag",
+                         "6 year lag")))
+
+# Major African-American events on the scatterplot
+n_major_events_subset <-
+  saa_and_event_tbl %>%
+  distinct(`Start year`, n) %>%
+  pull(n) %>%
+  sum()
+
+# scatter plot
+plot <-
+  ggplot(saa_and_event_tbl,
+         aes(n, value)) +
+  geom_text(aes(label = `Start year`),
+            size = 2) +
+  geom_smooth(se = FALSE,
+              method = "lm") +
+  stat_cor(label.y = 120,
+           label.x = 0.3,
+           size = 3) +
+  stat_regline_equation(label.y = 110,
+                        label.x = 0.3,
+                        size = 3) +
+  theme_bw(base_size = 10) +
+  labs(x = paste0("African-American major event frequency (n = ", n_major_events, ")"),
+       y = paste0("Mentions of 'race', etc. (n = ", n_words, ")\nin SAA abstracts (n = ", n_abstracts, ")")) +
+  facet_wrap( ~ name)
+

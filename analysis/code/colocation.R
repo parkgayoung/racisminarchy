@@ -27,6 +27,7 @@ colo  %>%
 keywords <-
   c("race",
     "racism",
+    "racial",
     "discrimination",
     "inequality",
     "inequalities")

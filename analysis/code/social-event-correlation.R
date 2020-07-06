@@ -77,6 +77,7 @@ all_text_c_dtm <-
 # Explore key words over time
 keywords <-
   c("race",
+    "racial",
     "racism",
     "discrimination",
     "inequality",
