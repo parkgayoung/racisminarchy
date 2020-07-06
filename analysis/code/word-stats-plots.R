@@ -24,6 +24,7 @@ saveRDS(all_text_c_dtm,
 keywords <-
   c("race",
     "racism",
+    "racial",
     "discrimination",
     "inequality",
     "inequalities")
