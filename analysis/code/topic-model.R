@@ -24,7 +24,8 @@ custom_stopwords <-
     "state", "results", "can", "discussed",
     "used", "also", "within", "chair",
     "social", "period", "evidence",
-    "annual", "seventh", "ninth")
+    "annual", "seventh", "ninth",
+    "papers", "dataset", "datasets")
 
 all_text_c_dtm <-
   dfm(all_text_c,
@@ -40,6 +41,12 @@ all_text_c_dtm <-
 
 all_text_c_dtm <-
   dfm_select(all_text_c_dtm, "\\w{3,}", valuetype = "regex")
+
+saveRDS(all_text_c_dtm,
+        here::here("analysis",
+                   "data",
+                   "all_text_c_dtm.rds"))
+
 
 # check freq of race words
 featfreq_out <- featfreq(all_text_c_dtm)
