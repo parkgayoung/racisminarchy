@@ -1,3 +1,5 @@
+library(quanteda)
+
 # https://quanteda.io/reference/textstat_collocations.html
 
 all_text <- readRDS(here::here("analysis","data", "saa_abstracts.rds"))
@@ -16,7 +18,7 @@ textstat_collocations(
 )
 
 # then filter so we only see the results for our keywords...
-
+# This code takes long time..
 colo  %>%
   filter(str_detect(collocation, " race"))
 
