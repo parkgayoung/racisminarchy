@@ -32,6 +32,8 @@ dfm_keywords <-
              pattern = keywords,
              selection = "keep")
 
+saveRDS(dfm_keywords, here::here("analysis","data","dfm_keywords.rds"))
+
 dfm_keywords_tbl <-
   convert(dfm_keywords, to = "data.frame") %>%
   pivot_longer(-document,
@@ -105,7 +107,9 @@ head(as.matrix(simi_all), 10)
 as.list(simi_all, n = 10)
 
 # compute similarities between features
-simi_keywords <- textstat_simil(dfm_keywords,
+simi_keywords <-
+  dfm_weight(dfm_keywords, scheme = "prop") %>%
+  textstat_simil(selection = dfm_keywords,
                                 all_text_c_dtm[, c("black",
                                                    "people",
                                                    "african",
