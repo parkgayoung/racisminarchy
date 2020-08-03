@@ -81,13 +81,13 @@ ggplot(data = dfm_keywords_tbl,
 # group keywords to three: race, inequality, and discrimination
 dfm_keywords_tbl_groups <-
   convert(dfm_keywords, to = "data.frame") %>%
-  mutate(`race related words` = racial + race + racism + racist,
-         `inequlity related words` = inequality + inequalities,
-         `discrimination related words` = discrimination + discriminatory) %>%
+  mutate(`race/racial/racism/racist` = racial + race + racism + racist,
+         `inequality/inequalities` = inequality + inequalities,
+         `discrimination/discriminatory` = discrimination + discriminatory) %>%
   select(doc_id,
-         `race related words`,
-         `inequlity related words`,
-         `discrimination related words`) %>%
+         `race/racial/racism/racist`,
+         `inequality/inequalities`,
+         `discrimination/discriminatory`) %>%
   pivot_longer(-doc_id,
                names_to = "keyword",
                values_to = "n") %>%
@@ -118,9 +118,6 @@ ggplot(data = dfm_keywords_tbl_groups,
   geom_vline(data = cumsum_the_word,
              aes(xintercept = year),
              color = "red") +
-  geom_hline(data = mean_the_word,
-             aes(yintercept = mean),
-             color = "blue") +
   facet_wrap( ~ keyword_n,
               ncol = 1,
               scales = "free_y") +
