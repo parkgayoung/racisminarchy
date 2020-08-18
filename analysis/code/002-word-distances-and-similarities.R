@@ -1,31 +1,40 @@
 library(tidyverse)
 library(quanteda)
 
-all_text <- readRDS(here::here("analysis","data", "saa_abstracts.rds"))
+if(!exists("all_text")){
+  all_text <- readRDS(here::here("analysis","data", "saa_abstracts.rds"))
+}
+
 names_all_text <- names(all_text)
 
 # count all words for each year
+if(!exists("all_text_c")){
 all_text_c <- corpus(all_text)
+}
 
 # don't remove any stopwords
-all_text_c_dtm <-
-  dfm(all_text_c,
-      tolower = TRUE,
-      verbose = TRUE,
-      remove_numbers = TRUE,
-      remove_symbols = TRUE,
-      split_hyphens = TRUE,
-      remove_punct = TRUE)
+if(!exists("all_text_c_dtm")){
+  all_text_c_dtm <-
+    dfm(all_text_c,
+        tolower = TRUE,
+        verbose = TRUE,
+        remove_numbers = TRUE,
+        remove_symbols = TRUE,
+        split_hyphens = TRUE,
+        remove_punct = TRUE)
 
+}
 
 # Explore key words over time
 keywords <-
   c("race",
     "racism",
     "racial",
-    "discrimination",
+    "racist",
     "inequality",
-    "inequalities")
+    "inequalities",
+    "discrimination",
+    "discriminatory")
 
 dfm_keywords <-
   dfm_select(all_text_c_dtm,
@@ -42,13 +51,13 @@ simi_all <-
            min_docfreq = 5) %>%
   dfm_weight(scheme = "prop") %>%
   textstat_simil(y = dfm_keywords,
-                 method = "correlation",
+                 method = "jaccard",
                  margin = "features")
 
 # tidy
 list_simil <- as.list(simi_all, n = 20)
 
-list_simil
+# list_simil
 
 list_simil_lst <-
   map(list_simil, ~tibble(corval = .x, feat = names(.x)))
@@ -59,6 +68,10 @@ list_simil_tbl <-
   mutate(id = row_number())
 
 # plot
+
+#-----------------------------------------------------------------------
+#-----------------------------------------------------------------------
+# this is the figure included in the manuscript
 library(ggrepel)
 ggplot(list_simil_tbl) +
   aes( kw, id) +
@@ -76,32 +89,11 @@ ggplot(list_simil_tbl) +
        y = "rank") +
   guides(size = FALSE)
 
+ggsave(here::here("analysis/figures/002-keyword-similar-words.png"),
+       h = 7,
+       w = 17)
+
+#-----------------------------------------------------------------------
+#-----------------------------------------------------------------------
 
 
-## spare -----------------------------
-dist_keywords <- textstat_dist(dfm_keywords,
-                               dfm_keywords[,"discrimination"],
-                               margin = "documents")
-
-dist_keywords_tbl <-
-  as.data.frame(dist_keywords, to = "data.frame")
-
-# compute similarities between features using relative frequency
-simi_all <-
-  dfm_weight(all_text_c_dtm, scheme = "prop") %>%
-  textstat_simil(selection = keywords,
-                 method = "correlation",
-                 margin = "features")
-
-head(as.matrix(simi_all), 10)
-as.list(simi_all, n = 10)
-
-# compute similarities between features
-simi_keywords <- textstat_simil(dfm_keywords,
-                                all_text_c_dtm[, c("black",
-                                                   "people",
-                                                   "african",
-                                                   "asian")],
-                                method = "correlation",
-                                margin = "features")
-head(as.matrix(simi_keywords), 10)

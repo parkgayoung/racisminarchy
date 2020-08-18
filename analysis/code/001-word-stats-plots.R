@@ -110,14 +110,14 @@ cumsum_the_word <-
   group_by(keyword_n) %>%
   filter(cumsum == min(cumsum))
 
-# count for groupings
+#-----------------------------------------------------------------------
+#-----------------------------------------------------------------------
+# count of each keyword groups
+# this is the figure included in the manuscript
 ggplot(data = dfm_keywords_tbl_groups,
        aes(x = year,
            y = n)) +
   geom_col() +
-  geom_vline(data = cumsum_the_word,
-             aes(xintercept = year),
-             color = "red") +
   facet_wrap( ~ keyword_n,
               ncol = 1,
               scales = "free_y") +
@@ -128,6 +128,13 @@ ggplot(data = dfm_keywords_tbl_groups,
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 90,
                                    vjust = 0.5))
+
+ggsave(here::here("analysis/figures/001-keyword-time-series.png"),
+       h = 5,
+       w = 10)
+
+#-----------------------------------------------------------------------
+#-----------------------------------------------------------------------
 
 # count all words for each year
 all_text_c_summary <-
@@ -144,6 +151,7 @@ dfm_keywords_tbl_prop <-
   mutate(keyword_n = str_c(keyword, " (n = ", sum_the_word, ")"))
 
 # plot of keywords as a proportion of all words per year
+#
 ggplot(data = dfm_keywords_tbl_prop,
        aes(x = year ,
            y = prop)) +
@@ -159,116 +167,4 @@ ggplot(data = dfm_keywords_tbl_prop,
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 90,
                                    vjust = 0.5))
-
-# distances for specific documents for keyword
-dist_keywords <- textstat_dist(dfm_keywords,
-                               dfm_keywords[,"discrimination"],
-                               margin = "documents")
-
-dist_keywords_tbl <-
-  as.data.frame(dist_keywords, to = "data.frame")
-
-# compute similarities between features using relative frequency
-simi_all <-
-  dfm_weight(all_text_c_dtm, scheme = "prop") %>%
-  textstat_simil(selection = keywords,
-                 method = "correlation",
-                 margin = "features")
-
-head(as.matrix(simi_all), 10)
-as.list(simi_all, n = 10)
-
-# compute similarities between features
-simi_keywords <-
-  dfm_weight(dfm_keywords, scheme = "prop") %>%
-  textstat_simil(selection = dfm_keywords,
-                                all_text_c_dtm[, c("black",
-                                                   "people",
-                                                   "african",
-                                                   "asian")],
-                                method = "cosine",
-                                margin = "features")
-head(as.matrix(simi_keywords), 10)
-
-# read data from googlesheet
-library(googlesheets4)
-event <- read_sheet("https://docs.google.com/spreadsheets/d/1DXgcXOsD_1yLfJ9tyADZhQr3rOK6Y1yL_GDuGyYtUNs/edit?ts=5ef3e46a#gid=0")
-
-# tidy up
-event_tally <-
-  event %>%
-  group_by(`Start year`) %>%
-  count(`Start year`) %>%
-  filter(!is.na(`Start year`),
-         `Start year` > 1961) %>%
-  ungroup()
-
-n_major_events <- sum(event_tally$n, na.rm = TRUE )
-
-# visualize
-major_event <-
-  ggplot(event_tally) +
-  aes(`Start year`) +
-  geom_histogram() +
-  theme_minimal() +
-  labs(x = "Year",
-       y = paste0("African-American\nhistorical major event (n = ", n_major_events, ")")
-  )
-
-# saa word per year
-saa_words_per_year <-
-  tibble(year = as.numeric(names(rowSums(dfm_keywords))),
-         saa_wordcount = rowSums(dfm_keywords))
-
-# join SAA and history data
-saa_and_event_tbl <-
-  event_tally %>%
-  right_join(saa_words_per_year, by = c(`Start year` = "year")) %>%
-  arrange(`Start year`) %>%
-  replace_na(list(n = 0, saa_wordcount = 0)) %>%
-  mutate(
-    `Same year` = saa_wordcount,
-    `1 year lag` = lag(saa_wordcount),
-    `2 year lag` = lag(saa_wordcount, 2),
-    `3 year lag` = lag(saa_wordcount, 3),
-    `4 year lag` = lag(saa_wordcount, 4),
-    `5 year lag` = lag(saa_wordcount, 5),
-    `6 year lag` = lag(saa_wordcount, 6)) %>%
-  select(-saa_wordcount,
-         -`Same year`)  %>%
-  pivot_longer(-c(`Start year`, n)) %>%
-  mutate(name = factor(name,
-                       levels = c(
-                         "1 year lag",
-                         "2 year lag",
-                         "3 year lag",
-                         "4 year lag",
-                         "5 year lag",
-                         "6 year lag")))
-
-# Major African-American events on the scatterplot
-n_major_events_subset <-
-  saa_and_event_tbl %>%
-  distinct(`Start year`, n) %>%
-  pull(n) %>%
-  sum()
-
-# scatter plot
-plot <-
-  ggplot(saa_and_event_tbl,
-         aes(n, value)) +
-  geom_text(aes(label = `Start year`),
-            size = 2) +
-  geom_smooth(se = FALSE,
-              method = "lm") +
-  stat_cor(label.y = 120,
-           label.x = 0.3,
-           size = 3) +
-  stat_regline_equation(label.y = 110,
-                        label.x = 0.3,
-                        size = 3) +
-  theme_bw(base_size = 10) +
-  labs(x = paste0("African-American major event frequency (n = ", n_major_events, ")"),
-       y = paste0("Mentions of 'race', etc. (n = ", n_words, ")\nin SAA abstracts (n = ", n_abstracts, ")")) +
-  facet_wrap( ~ name)
-
+#-----------------------------------------------------------------------

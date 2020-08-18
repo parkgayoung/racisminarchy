@@ -38,20 +38,26 @@ event_all_tbl_tally %>%
 n_events = sum(event_all_tbl_tally$n, na.rm = TRUE)
 
 # visualise
+min_year <- min(event_all_tbl$year)
+max_year <- max(event_all_tbl$year)
+
 gg <-
 ggplot(event_all_tbl) +
   aes(year) +
   geom_histogram(binwidth = 1) +
   theme_bw(base_size = 8) +
+  scale_x_continuous(
+                     breaks = seq(1550, max_year,
+                     by = 50)) +
   labs(x = "Year",
        y = paste0("African-American\nhistorical event annual\nfrequency (n = ", n_events, ")")
       # title = "Histogram of events from Wikipedia's 'Timeline of African-American history'",
       # subtitle = "data from https://en.wikipedia.org/wiki/Timeline_of_African-American_history"
        )
 
-gg
+# gg
 
-plotly::ggplotly(gg)
+# plotly::ggplotly(gg)
 
 # compare with words and years in SAA abstracts
 
@@ -61,27 +67,36 @@ library(quanteda)
 # read in all txt files of SAA abstracts from 1962 to 2020. Data is from SAA website and scanned images of text is converted to PDF using OCR
 # the code for OCR is here: https://github.com/benmarwick/saa-meeting-abstracts/blob/master/code/001-PDF-page-images-to-txt.R
 # this is a character vector, one abstract per element
-all_text <- readRDS(here::here("analysis","data", "saa_abstracts.rds"))
+if(!exists("all_text")){
+  all_text <- readRDS(here::here("analysis","data", "saa_abstracts.rds"))
+}
 
 # count all words for each year
-all_text_c <- corpus(all_text)
+if(!exists("all_text_c")){
+  all_text_c <- corpus(all_text)
+}
 
 # make a dfm
-all_text_c_dtm <-
-  dfm(all_text_c,
-      remove = stopwords("english"),
-      # stem = TRUE,
-      verbose = TRUE,
-      remove_punct = TRUE)
+if(!exists("all_text_c_dtm")){
+  all_text_c_dtm <-
+    dfm(all_text_c,
+        remove = stopwords("english"),
+        # stem = TRUE,
+        verbose = TRUE,
+        remove_punct = TRUE)
+
+}
 
 # Explore key words over time
 keywords <-
   c("race",
-    "racial",
     "racism",
-    "discrimination",
+    "racial",
+    "racist",
     "inequality",
-    "inequalities")
+    "inequalities",
+    "discrimination",
+    "discriminatory")
 
 dfm_keywords <-
   dfm_select(all_text_c_dtm,
@@ -108,7 +123,7 @@ gg1 <-
        # subtitle = "data from https://en.wikipedia.org/wiki/Timeline_of_African-American_history"
   )
 
-gg1
+
 
 # join SAA and history data
 saa_and_history_tbl <-
@@ -170,3 +185,6 @@ library(patchwork)
 gg + sp + plot_layout(ncol = 1,
                       heights = c(0.3, 1))
 
+ggsave(here::here("analysis/figures/005-keyword-and-event-relationships.png"),
+       h = 8,
+       w = 10)
