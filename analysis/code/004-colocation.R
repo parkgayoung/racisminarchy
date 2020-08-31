@@ -36,6 +36,7 @@ keywords <-
     "discriminatory")
 
 
+library(tidyverse)
 
 # then filter so we only see the results for our keywords...
 # This code takes long time..
