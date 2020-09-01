@@ -8,10 +8,13 @@ library(quanteda)
 
 all_text <- readRDS(here::here("analysis","data", "saa_abstracts.rds"))
 
-# count all words for each year
+# count all words for each year (skip this and run line 143)
 all_text_c <- corpus(all_text)
+all_txts_c_summary <-
+  summary(all_text_c) %>%
+  mutate(year = parse_number(Text))
 
-# make a dfm
+# make a dfm (skip this, and run line 26)
 all_text_c_dtm <-
   dfm(all_text_c,
       remove = stopwords("english"),
@@ -113,8 +116,8 @@ cumsum_the_word <-
 #-----------------------------------------------------------------------
 #-----------------------------------------------------------------------
 # count of each keyword groups
-# this is the figure included in the manuscript
-ggplot(data = dfm_keywords_tbl_groups,
+word_three_groups <-
+  ggplot(data = dfm_keywords_tbl_groups,
        aes(x = year,
            y = n)) +
   geom_col() +
@@ -129,30 +132,21 @@ ggplot(data = dfm_keywords_tbl_groups,
   theme(axis.text.x = element_text(angle = 90,
                                    vjust = 0.5))
 
-ggsave(here::here("analysis/figures/001-keyword-time-series.png"),
-       h = 5,
-       w = 10)
-
 #-----------------------------------------------------------------------
 #-----------------------------------------------------------------------
-
-# count all words for each year
-all_text_c_summary <-
-  summary(all_text_c) %>%
-  mutate(year = parse_number(Text))
-
-# compute proportion of all words per year and sum up the keywords
+# compute proportion of all word groups per year and sum up the keywords
 dfm_keywords_tbl_prop <-
-  dfm_keywords_tbl %>%
-  left_join(all_text_c_summary) %>%
+  dfm_keywords_tbl_groups %>%
+  left_join(all_txts_c_summary) %>%
   mutate(prop = n / Tokens ) %>%
   group_by(keyword) %>%
   mutate(sum_the_word = sum(n)) %>%
   mutate(keyword_n = str_c(keyword, " (n = ", sum_the_word, ")"))
 
 # plot of keywords as a proportion of all words per year
-#
-ggplot(data = dfm_keywords_tbl_prop,
+# this is the figure included in the manuscript
+keyword_proportion_per_year <-
+  ggplot(data = dfm_keywords_tbl_prop,
        aes(x = year ,
            y = prop)) +
   geom_col() +
@@ -162,9 +156,77 @@ ggplot(data = dfm_keywords_tbl_prop,
   scale_x_continuous(labels = c(seq(1960, 2020, 2)),
                      breaks = seq(1960, 2020, 2),
                      name = "Year") +
-  scale_y_continuous(name = "Proportion of all words per year",
+  scale_y_continuous(name = "Proportion of keywords per year",
                      labels = scales::comma) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 90,
                                    vjust = 0.5))
+
 #-----------------------------------------------------------------------
+#-----------------------------------------------------------------------
+
+# load dfs of all text and abstract and join
+all_txts_c_summary <-
+  readRDS(here::here("analysis","data", "all_text_c_summary.rds"))
+library(readxl)
+saa_abstract <-
+  read_excel(here::here("analysis","data", "saa-abstracts-tally.xlsx"))
+
+all_txts_c_summary_join_abstract <-
+  all_txts_c_summary %>%
+  left_join(saa_abstract) %>%
+  select(Text, Tokens, number_of_abstracts, year) %>%
+  mutate(`word/abstract` = Tokens/number_of_abstracts)
+
+# two figures to be combined to the first figure in the manuscript
+all_words_per_year <-
+  ggplot(data = all_txts_c_summary_join_abstract,
+         aes(x = year,
+             y = Tokens)) +
+  geom_col() +
+  scale_x_continuous(labels = c(seq(1960, 2020, 2)),
+                     breaks = seq(1960, 2020, 2),
+                     name = "Year") +
+  scale_y_continuous(labels = scales::comma(c(seq(0, 800000, 200000))),
+                     breaks = seq(0, 800000, 200000),
+                     name = "all words") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90,
+                                   vjust = 0.5))
+
+all_words_per_abstracts_per_year <-
+  ggplot(data = all_txts_c_summary_join_abstract,
+         aes(x = year,
+             y = `word/abstract`)) +
+  geom_col() +
+  scale_x_continuous(labels = c(seq(1960, 2020, 2)),
+                     breaks = seq(1960, 2020, 2),
+                     name = "Year") +
+  scale_y_continuous(labels = c(seq(0, 180, 50)),
+                     breaks = seq(0, 180, 50),
+                     name = "word/abstract") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90,
+                                   vjust = 0.5))
+
+# combine all plots
+library(cowplot)
+
+plot_grid(all_words_per_year,
+          all_words_per_abstracts_per_year,
+          keyword_proportion_per_year,
+          rel_heights = c(0.5, 0.5, 1.2),
+          labels = c('A', 'B', 'C'),
+          label_size = 12,
+          ncol = 1)
+
+ggsave(here::here("analysis/figures/001-keyword-time-series.png"),
+       h = 8,
+       w = 8)
+
+#-----------------------------------------------------------------------
+#-----------------------------------------------------------------------
+top_row <- plot_grid(word_per_year,
+                     abstract_per_year,
+                     labels = c('A', 'B'),
+                     label_size = 12)
