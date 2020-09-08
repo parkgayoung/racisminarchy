@@ -134,6 +134,13 @@ word_three_groups <-
 
 #-----------------------------------------------------------------------
 #-----------------------------------------------------------------------
+# load dfs of all text and abstract and join
+all_txts_c_summary <-
+  readRDS(here::here("analysis","data", "all_text_c_summary.rds"))
+library(readxl)
+saa_abstract <-
+  read_excel(here::here("analysis","data", "saa-abstracts-tally.xlsx"))
+
 # compute proportion of all word groups per year and sum up the keywords
 dfm_keywords_tbl_prop <-
   dfm_keywords_tbl_groups %>%
@@ -164,13 +171,6 @@ keyword_proportion_per_year <-
 
 #-----------------------------------------------------------------------
 #-----------------------------------------------------------------------
-
-# load dfs of all text and abstract and join
-all_txts_c_summary <-
-  readRDS(here::here("analysis","data", "all_text_c_summary.rds"))
-library(readxl)
-saa_abstract <-
-  read_excel(here::here("analysis","data", "saa-abstracts-tally.xlsx"))
 
 all_txts_c_summary_join_abstract <-
   all_txts_c_summary %>%
