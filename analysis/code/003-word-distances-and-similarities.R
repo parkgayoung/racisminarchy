@@ -89,7 +89,7 @@ ggplot(list_simil_tbl) +
        y = "rank") +
   guides(size = FALSE)
 
-ggsave(here::here("analysis/figures/002-keyword-similar-words.png"),
+ggsave(here::here("analysis/figures/003-keyword-similar-words.png"),
        h = 7,
        w = 17)
 
