@@ -4,7 +4,7 @@ library(quanteda)
 # read in all txt files of SAA abstracts from 1962 to 2020. Data is from SAA website and scanned images of text is converted to PDF using OCR
 # the code for OCR is here: https://github.com/benmarwick/saa-meeting-abstracts/blob/master/code/001-PDF-page-images-to-txt.R
 # this is a character vector, one abstract per element
-# start the code from line 23 (skip the code before that line to save time)
+# can skip code between line 12 and line 24 (skip the code before that line to save time)
 
 all_text <- readRDS(here::here("analysis","data", "saa_abstracts.rds"))
 
@@ -147,17 +147,22 @@ dfm_keywords_tbl_prop <-
   left_join(all_txts_c_summary) %>%
   mutate(prop = n / Tokens ) %>%
   group_by(keyword) %>%
-  mutate(sum_the_word = sum(n)) %>%
-  mutate(keyword_n = str_c(keyword, " (n = ", sum_the_word, ")"))
+  mutate(sum_the_word = sum(n),
+         keyword_n = str_c(keyword, " (n = ", sum_the_word, ")")) %>%
+  filter(!is.na(prop)) %>%
+  mutate(max_in_class = ifelse(prop == max(prop), n, ""))
 
 # plot of keywords as a proportion of all words per year
 # this is the figure included in the manuscript
 keyword_proportion_per_year <-
   ggplot(data = dfm_keywords_tbl_prop,
-       aes(x = year ,
-           y = prop)) +
+         aes(x = year ,
+             y = prop)) +
   geom_col() +
-  facet_wrap( ~ keyword,
+  geom_text(aes(label = max_in_class),
+            size = 3,
+            color = "red") +
+  facet_wrap( ~ keyword_n,
               ncol = 1,
               scales = "free_y") +
   scale_x_continuous(labels = c(seq(1960, 2020, 2)),
@@ -179,6 +184,7 @@ all_txts_c_summary_join_abstract <-
   mutate(`word/abstract` = Tokens/number_of_abstracts)
 
 # two figures to be combined to the first figure in the manuscript
+# all word per year
 all_words_per_year <-
   ggplot(data = all_txts_c_summary_join_abstract,
          aes(x = year,
@@ -194,6 +200,7 @@ all_words_per_year <-
   theme(axis.text.x = element_text(angle = 90,
                                    vjust = 0.5))
 
+# all word per abstract
 all_words_per_abstracts_per_year <-
   ggplot(data = all_txts_c_summary_join_abstract,
          aes(x = year,
@@ -209,7 +216,7 @@ all_words_per_abstracts_per_year <-
   theme(axis.text.x = element_text(angle = 90,
                                    vjust = 0.5))
 
-# combine all plots
+# combine three plots
 library(cowplot)
 
 plot_grid(all_words_per_year,
@@ -223,10 +230,3 @@ plot_grid(all_words_per_year,
 ggsave(here::here("analysis/figures/001-keyword-time-series.png"),
        h = 8,
        w = 8)
-
-#-----------------------------------------------------------------------
-#-----------------------------------------------------------------------
-top_row <- plot_grid(word_per_year,
-                     abstract_per_year,
-                     labels = c('A', 'B'),
-                     label_size = 12)
