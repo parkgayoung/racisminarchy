@@ -141,6 +141,8 @@ library(readxl)
 saa_abstract <-
   read_excel(here::here("analysis","data", "saa-abstracts-tally.xlsx"))
 
+sum(saa_abstract$number_of_abstracts, na.rm=T)
+
 # compute proportion of all word groups per year and sum up the keywords
 dfm_keywords_tbl_prop <-
   dfm_keywords_tbl_groups %>%
@@ -160,8 +162,10 @@ keyword_proportion_per_year <-
              y = prop)) +
   geom_col() +
   geom_text(aes(label = max_in_class),
-            size = 3,
-            color = "red") +
+            size = 3.5,
+            color = "red",
+            vjust = 0.5,
+            hjust = -0.3) +
   facet_wrap( ~ keyword_n,
               ncol = 1,
               scales = "free_y") +
@@ -222,11 +226,11 @@ library(cowplot)
 plot_grid(all_words_per_year,
           all_words_per_abstracts_per_year,
           keyword_proportion_per_year,
-          rel_heights = c(0.5, 0.5, 1.2),
+          rel_heights = c(0.4, 0.4, 1.2),
           labels = c('A', 'B', 'C'),
           label_size = 12,
           ncol = 1)
 
 ggsave(here::here("analysis/figures/001-keyword-time-series.png"),
-       h = 8,
-       w = 8)
+       h = 9,
+       w = 9)
