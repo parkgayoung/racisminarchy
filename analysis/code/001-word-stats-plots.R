@@ -141,7 +141,7 @@ library(readxl)
 saa_abstract <-
   read_excel(here::here("analysis","data", "saa-abstracts-tally.xlsx"))
 
-sum(saa_abstract$number_of_abstracts, na.rm=T)
+n_abstracts <- sum(saa_abstract$number_of_abstracts, na.rm=T)
 
 # compute proportion of all word groups per year and sum up the keywords
 dfm_keywords_tbl_prop <-
@@ -149,10 +149,15 @@ dfm_keywords_tbl_prop <-
   left_join(all_txts_c_summary) %>%
   mutate(prop = n / Tokens ) %>%
   group_by(keyword) %>%
-  mutate(sum_the_word = sum(n),
-         keyword_n = str_c(keyword, " (n = ", sum_the_word, ")")) %>%
   filter(!is.na(prop)) %>%
-  mutate(max_in_class = ifelse(prop == max(prop), n, ""))
+  mutate(max_in_class = ifelse(prop == max(prop), n, "")) %>%
+  mutate(sum_the_word = sum(n),
+         keyword_n = str_c(keyword, " (n = ", sum_the_word,")")) %>%
+  mutate(keyword_sets = case_when(
+    sum_the_word == 262 ~ "race/racial/racism/racist (n = 262, maximum of 38 in 2018)",
+    sum_the_word == 934 ~ "inequality/inequalities (n = 934, maximum of 110 in 2016)",
+    sum_the_word == 87 ~ "discrimination/discriminatory (n = 87, maximum of 4 in 1977)",
+    TRUE ~ "other"))
 
 # plot of keywords as a proportion of all words per year
 # this is the figure included in the manuscript
@@ -161,12 +166,10 @@ keyword_proportion_per_year <-
          aes(x = year ,
              y = prop)) +
   geom_col() +
-  geom_text(aes(label = max_in_class),
-            size = 3.5,
-            color = "red",
-            vjust = 0.5,
-            hjust = -0.3) +
-  facet_wrap( ~ keyword_n,
+  #geom_text(aes(label = max_in_class),
+            #size = 3.5,
+            #color = "red") +
+  facet_wrap( ~ keyword_sets,
               ncol = 1,
               scales = "free_y") +
   scale_x_continuous(labels = c(seq(1960, 2020, 2)),
@@ -176,7 +179,8 @@ keyword_proportion_per_year <-
                      labels = scales::comma) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 90,
-                                   vjust = 0.5))
+                                   vjust = 0.5),
+        strip.text = element_text(size = 12))
 
 #-----------------------------------------------------------------------
 #-----------------------------------------------------------------------
@@ -226,7 +230,7 @@ library(cowplot)
 plot_grid(all_words_per_year,
           all_words_per_abstracts_per_year,
           keyword_proportion_per_year,
-          rel_heights = c(0.4, 0.4, 1.2),
+          rel_heights = c(0.5, 0.5, 1.2),
           labels = c('A', 'B', 'C'),
           label_size = 12,
           ncol = 1)
