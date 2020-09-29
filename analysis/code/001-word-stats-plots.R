@@ -151,12 +151,11 @@ dfm_keywords_tbl_prop <-
   group_by(keyword) %>%
   filter(!is.na(prop)) %>%
   mutate(max_in_class = ifelse(prop == max(prop), n, "")) %>%
-  mutate(sum_the_word = sum(n),
-         keyword_n = str_c(keyword, " (n = ", sum_the_word,")")) %>%
+  mutate(keyword_n = str_c(keyword, " (n = ", sum,")")) %>%
   mutate(keyword_sets = case_when(
-    sum_the_word == 262 ~ "race/racial/racism/racist (n = 262, maximum of 38 in 2018)",
-    sum_the_word == 934 ~ "inequality/inequalities (n = 934, maximum of 110 in 2016)",
-    sum_the_word == 87 ~ "discrimination/discriminatory (n = 87, maximum of 4 in 1977)",
+    sum == 262 ~ "race/racial/racism/racist (n = 262, maximum of 38 in 2018)",
+    sum == 934 ~ "inequality/inequalities (n = 934, maximum of 110 in 2016)",
+    sum == 87 ~ "discrimination/discriminatory (n = 87, maximum of 4 in 1977)",
     TRUE ~ "other"))
 
 # plot of keywords as a proportion of all words per year
@@ -166,9 +165,6 @@ keyword_proportion_per_year <-
          aes(x = year ,
              y = prop)) +
   geom_col() +
-  #geom_text(aes(label = max_in_class),
-            #size = 3.5,
-            #color = "red") +
   facet_wrap( ~ keyword_sets,
               ncol = 1,
               scales = "free_y") +
