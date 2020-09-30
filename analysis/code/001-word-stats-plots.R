@@ -96,22 +96,22 @@ dfm_keywords_tbl_groups <-
                values_to = "n") %>%
   mutate(year = parse_number(doc_id)) %>%
   group_by(keyword) %>%
-  mutate(sum = sum(n),
-         mean = mean(n),
-         cumsum = cumsum(n)) %>%
-  mutate(keyword_n = str_c(keyword, " (n = ", sum, ")"))
+  mutate(sum_keyword = sum(n),
+         mean_keyword = mean(n),
+         cumsum_keyword = cumsum(n)) %>%
+  mutate(keyword_n = str_c(keyword, " (n = ", sum_keyword, ")"))
 
 # make hline for mean
 mean_the_word <-
   dfm_keywords_tbl_groups %>%
-  distinct(keyword_n, mean)
+  distinct(keyword_n, mean_keyword)
 
 # make vline for cumsum
 cumsum_the_word <-
   dfm_keywords_tbl_groups %>%
-  filter(cumsum > sum/2 ) %>%
+  filter(cumsum_keyword > sum_keyword/2 ) %>%
   group_by(keyword_n) %>%
-  filter(cumsum == min(cumsum))
+  filter(cumsum_keyword == min(cumsum_keyword))
 
 #-----------------------------------------------------------------------
 #-----------------------------------------------------------------------
@@ -144,19 +144,18 @@ saa_abstract <-
 n_abstracts <- sum(saa_abstract$number_of_abstracts, na.rm=T)
 
 # compute proportion of all word groups per year and sum up the keywords
+
 dfm_keywords_tbl_prop <-
   dfm_keywords_tbl_groups %>%
   left_join(all_txts_c_summary) %>%
   mutate(prop = n / Tokens ) %>%
   group_by(keyword) %>%
   filter(!is.na(prop)) %>%
-  mutate(max_in_class = ifelse(prop == max(prop), n, "")) %>%
-  mutate(keyword_n = str_c(keyword, " (n = ", sum,")")) %>%
-  mutate(keyword_sets = case_when(
-    sum == 262 ~ "race/racial/racism/racist (n = 262, maximum of 38 in 2018)",
-    sum == 934 ~ "inequality/inequalities (n = 934, maximum of 110 in 2016)",
-    sum == 87 ~ "discrimination/discriminatory (n = 87, maximum of 4 in 1977)",
-    TRUE ~ "other"))
+  mutate(max_per_class = ifelse(prop == max(prop),
+                                str_c("maximum of ", n, " in ", year), NA)) %>%
+  arrange(sum_keyword, max_per_class) %>%
+  fill(max_per_class) %>%
+  mutate(keyword_sets = str_c(keyword, " (n = ", sum_keyword, ", ", max_per_class, ")"))
 
 # plot of keywords as a proportion of all words per year
 # this is the figure included in the manuscript
