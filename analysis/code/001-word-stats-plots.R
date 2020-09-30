@@ -155,7 +155,7 @@ dfm_keywords_tbl_prop <-
                                 str_c("maximum of ", n, " in ", year), NA)) %>%
   arrange(sum_keyword, max_per_class) %>%
   fill(max_per_class) %>%
-  mutate(keyword_sets = str_c(keyword, " (n = ", sum_keyword, ", ", max_per_class, ")"))
+  mutate(keyword_sets = paste0(keyword, " (n = ", sum_keyword, ", ", max_per_class, ")"))
 
 # plot of keywords as a proportion of all words per year
 # this is the figure included in the manuscript
