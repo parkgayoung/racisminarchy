@@ -2,18 +2,37 @@ Package: bulletinracisminarchy
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R:
-    person(given = "First",
-           family = "Last",
+    person(given = "Ben",
+           family = "Marwick",
            role = c("aut", "cre"),
-           email = "first.last@example.com")
-Description: What the package does (one paragraph)
+           email = "benmarwick@gmail.com")
+Description: Research compendium for a manuscript.
 License: MIT + file LICENSE
 ByteCompile: true
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Imports: bookdown,
-    here
-Suggests: devtools,
-    git2r
+    here,
+    cowplot (>= 1.0.0),
+    ggpubr (>= 0.4.0),
+    ggraph (>= 2.0.3),
+    ggrepel (>= 0.9.0),
+    googlesheets4 (>= 0.2.0),
+    knitr (>= 1.29),
+    patchwork (>= 1.0.1),
+    plotly (>= 4.9.2.1),
+    quanteda (>= 2.1.0),
+    readxl (>= 1.3.1),
+    rmarkdown (>= 2.3),
+    rvest (>= 0.3.6),
+    scales (>= 1.1.1),
+    stm (>= 1.3.5),
+    tidygraph (>= 1.2.0),
+    tidytext (>= 0.2.5),
+    tidyverse (>= 1.3.0)
+Suggests: 
+    devtools,
+    git2r,
+    testthat
