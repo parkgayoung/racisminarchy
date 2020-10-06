@@ -48,7 +48,6 @@ kwic_output <- kwic(toks, pattern = phrase(multiword))
 head(kwic(toks, pattern = phrase(multiword)))
 
 ## Explore some visualization methods
-library(tidyverse)
 kwic_output %>%
   filter(keyword == "race")
 
@@ -161,7 +160,7 @@ ggplot() +
 library(cowplot)
 plot_grid(plotlist = kwic_plots, nrow = 2)
 
-ggsave(here::here("analysis/figures/004-keyword-kwik.png"),
+ggsave(here::here("analysis/figures/004-keyword-kwic.png"),
        h = 7,
        w = 17)
 
@@ -190,3 +189,4 @@ plot_grid(keywords_tfidf_hist_plot,
 
 
 #-----------------------------------------------------
+
