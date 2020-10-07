@@ -34,7 +34,8 @@ Imports: bookdown,
     tidytext,
     tidyverse ,
     Rtsne, 
-    rsvd 
+    rsvd,
+    reshape2
 Suggests: 
     devtools,
     git2r,
