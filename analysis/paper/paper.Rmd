@@ -46,7 +46,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   warning = FALSE,
   message = FALSE,
-  echo = FALSE,
+  echo = TRUE,
   comment = "#>",
   fig.path = "../figures/",
   dpi = 300
@@ -55,23 +55,23 @@ knitr::opts_chunk$set(
 
 <!-- The actual document text starts here: -->
 
-```{r}
+```{r 001-word-stats-plots}
 source(here::here('analysis/code/001-word-stats-plots.R'))
 ```
  
-```{r}
+```{r 002-topic-model}
 source(here::here('analysis/code/002-topic-model.R'))
 ```
  
-```{r}
+```{r 003-word-distances}
 source(here::here('analysis/code/003-word-distances-and-similarities.R'))
 ```
  
-```{r}
+```{r 004-keyword-in-context}
 source(here::here('analysis/code/004-keyword-in-context.R'))
 ```
  
-```{r}
+```{r 005-social-event-correlation}
 source(here::here('analysis/code/005-social-event-correlation.R'))
 ```
 
