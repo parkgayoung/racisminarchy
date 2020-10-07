@@ -60,19 +60,19 @@ source(here::here('analysis/code/001-word-stats-plots.R'))
 ```
  
 ```{r}
- source(here::here(analysis/code/002-topic-model.R'))
+source(here::here('analysis/code/002-topic-model.R'))
 ```
  
 ```{r}
- source(here::here(analysis/code/003-word-distances-and-similarities.R'))
+source(here::here('analysis/code/003-word-distances-and-similarities.R'))
 ```
  
 ```{r}
- source(here::here(analysis/code/004-keyword-in-context.R'))
+source(here::here('analysis/code/004-keyword-in-context.R'))
 ```
  
 ```{r}
- source(here::here(analysis/code/005-social-event-correlation.R'))
+source(here::here('analysis/code/005-social-event-correlation.R'))
 ```
 
 
