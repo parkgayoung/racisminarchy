@@ -6,6 +6,8 @@ MAINTAINER Ben Marwick <benmarwick@gmail.com>
 
 COPY . /bulletinracisminarchy
 
+WORKDIR /bulletinracisminarchy
+
 # go into the repo directory
 RUN . /etc/environment \
   # Install linux depedendencies here
