@@ -6,8 +6,6 @@ MAINTAINER Ben Marwick <benmarwick@gmail.com>
 
 COPY . /bulletinracisminarchy
 
-WORKDIR /bulletinracisminarchy
-
 # go into the repo directory
 RUN . /etc/environment \
   # Install linux depedendencies here
@@ -17,8 +15,6 @@ RUN . /etc/environment \
   # build this compendium package
   && R -e "devtools::install('/bulletinracisminarchy', dep=TRUE)" \
   && R -e "devtools::check('/bulletinracisminarchy')" \
-  && R -e "source('/bulletinracisminarchy/analysis/code/001-word-stats-plots.R')" \
-  && R -e "source('/bulletinracisminarchy/analysis/code/002-topic-model.R')" \
-  && R -e "source('/bulletinracisminarchy/analysis/code/003-word-distances-and-similarities.R')" \
-  && R -e "source('/bulletinracisminarchy/analysis/code/004-keyword-in-context.R')" \
-  && R -e "source('/bulletinracisminarchy/analysis/code/005-social-event-correlation.R')"
+  # render the manuscript into a docx, you'll need to edit this if you've
+  # customised the location and name of your main Rmd file
+  && R -e "rmarkdown::render('/bulletinracisminarchy/analysis/paper/paper.Rmd')"
