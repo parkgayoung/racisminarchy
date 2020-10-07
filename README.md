@@ -7,7 +7,7 @@
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/parkgayoung/bulletinracisminarchy/master?urlpath=rstudio)
 [![Docker build
-status](https://github.com/parkgayoung/bulletinracisminarchy/workflows/docker-build/badge.svg)](https://github.com/parkgayoung/bulletinracisminarchy/actions)
+status](https://github.com/parkgayoung/bulletinracisminarchy/workflows/.github/workflows/docker-build.yaml/badge.svg)](https://github.com/parkgayoung/bulletinracisminarchy/actions)
 <!-- badges: end -->
 
 This repository contains the data and code for our paper. Our pre-print
@@ -16,7 +16,7 @@ is online here:
 > Park, G., L-Y Wang, B. Marwick, (2020) *How do archaeologists write
 > about race and inequality? Computational text analysis of 40 years of
 > Society of American Archaeology Annual Meeting Abstracts*. , Accessed
-> 06 Oct 2020. Online at <https://doi.org/10.31219/osf.io/zm73f>
+> 07 Oct 2020. Online at <https://doi.org/10.31219/osf.io/zm73f>
 
 ### How to cite
 
@@ -25,7 +25,7 @@ Please cite this compendium as:
 > Park, G., L-Y Wang, B. Marwick, (2020), (2020). *Compendium of R code
 > and data for How do archaeologists write about race and inequality?
 > Computational text analysis of 40 years of Society of American
-> Archaeology Annual Meeting Abstracts*. Accessed 06 Oct 2020. Online at
+> Archaeology Annual Meeting Abstracts*. Accessed 07 Oct 2020. Online at
 > <https://doi.org/10.17605/OSF.IO/2N3RF>
 
 ## Contents

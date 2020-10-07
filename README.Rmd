@@ -18,7 +18,7 @@ Title <- "How do archaeologists write about race and inequality? Computational t
 
 <!-- badges: start -->
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/parkgayoung/bulletinracisminarchy/master?urlpath=rstudio) 
-[![Docker build status](https://github.com/parkgayoung/bulletinracisminarchy/workflows/docker-build/badge.svg)](https://github.com/parkgayoung/bulletinracisminarchy/actions)
+[![Docker build status](https://github.com/parkgayoung/bulletinracisminarchy/workflows/.github/workflows/docker-build.yaml/badge.svg)](https://github.com/parkgayoung/bulletinracisminarchy/actions)
 <!-- badges: end -->
 
 This repository contains the data and code for our paper. Our pre-print is online here:
