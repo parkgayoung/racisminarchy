@@ -1,5 +1,5 @@
 ---
-title: "Title Goes Here"
+title: "How do archaeologists write about race and inequality? Computational text analysis of 40 years of Society of American Archaeology Annual Meeting Abstracts."
 author:
   - Myfirstname Mylastname:
       email: fl@oneplace.edu
@@ -46,7 +46,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   warning = FALSE,
   message = FALSE,
-  echo = FALSE,
+  echo = TRUE,
   comment = "#>",
   fig.path = "../figures/",
   dpi = 300
@@ -55,54 +55,26 @@ knitr::opts_chunk$set(
 
 <!-- The actual document text starts here: -->
 
-# Introduction
-
-Here is a citation [@Marwick2017]
-
-# Background
-
-# Methods
-
-# Results
-
-<!-- Here's some example analysis code: -->
-
-```{r get-data, eval = FALSE}
-# Note the path that we need to use to access our data files when rendering this document
-saa_abstracts_data_dtm <-
-  readRDS(here::here("analysis/data/all_text_c_dtm.rds"))
+```{r 001-word-stats-plots}
+source(here::here('analysis/code/001-word-stats-plots.R'))
+```
+ 
+```{r 002-topic-model}
+source(here::here('analysis/code/002-topic-model.R'))
+```
+ 
+```{r 003-word-distances}
+source(here::here('analysis/code/003-word-distances-and-similarities.R'))
+```
+ 
+```{r 004-keyword-in-context}
+source(here::here('analysis/code/004-keyword-in-context.R'))
+```
+ 
+```{r 005-social-event-correlation}
+source(here::here('analysis/code/005-social-event-correlation.R'))
 ```
 
-```{r demo-plot, fig.cap="A plot of random numbers"}
-plot(rnorm(10))
-```
-
-Figure \@ref(fig:demo-plot) shows how we can have a caption and cross-reference for a plot
-
-```{r demo-inline-code}
-x <- round(pi, 2)
-```
-
-Here is an example of inline code `r x` in the middle of a sentence.
-
-# Discussion
-
-# Conclusion
-
-# Acknowledgements
-
-<!-- The following line inserts a page break  -->
-
-\newpage
-
-# References
-
-<!-- The following line ensures the references appear here for the MS Word or HTML output files, rather than right at the end of the document (this will not work for PDF files):  -->
-
-::: {#refs}
-:::
-
-\newpage
 
 ### Colophon
 
