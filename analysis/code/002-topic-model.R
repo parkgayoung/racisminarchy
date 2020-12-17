@@ -64,7 +64,7 @@ rm(all_text_c_dtm)
 rm(all_text_c)
 rm(all_text)
 
-# set seed to get same result for every run
+# set random number (100) for setting seed  to get same result for every run
 set.seed(100)
 saaFit <- stm(all_text_c_dtm_trim,
               K = 0,
