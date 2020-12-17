@@ -4,7 +4,7 @@ FROM rocker/verse:4.0.2
 # required
 MAINTAINER Ben Marwick <benmarwick@gmail.com>
 
-COPY . /bulletinracisminarchy
+COPY . /racisminarchy
 
 # go into the repo directory
 RUN . /etc/environment \
@@ -13,8 +13,8 @@ RUN . /etc/environment \
   && sudo apt-get update \
   && sudo apt-get install libudunits2-dev -y \
   # build this compendium package
-  && R -e "devtools::install('/bulletinracisminarchy', dep=TRUE)" \
-  && R -e "devtools::check('/bulletinracisminarchy')" \
+  && R -e "devtools::install('/racisminarchy', dep=TRUE)" \
+  && R -e "devtools::check('/racisminarchy')" \
   # render the manuscript into a docx, you'll need to edit this if you've
   # customised the location and name of your main Rmd file
-  && R -e "rmarkdown::render('/bulletinracisminarchy/analysis/paper/paper.Rmd')"
+  && R -e "rmarkdown::render('/racisminarchy/analysis/paper/paper.Rmd')"

@@ -185,6 +185,6 @@ library(patchwork)
 gg + sp + plot_layout(ncol = 1,
                       heights = c(0.3, 1))
 
-ggsave(here::here("analysis/figures/005-keyword-and-event-relationships.png"),
+ggsave(here::here("analysis/figures/005-keyword-and-event-relationships.jpg"),
        h = 8,
        w = 10)

@@ -160,7 +160,7 @@ ggplot() +
 library(cowplot)
 plot_grid(plotlist = kwic_plots, nrow = 2)
 
-ggsave(here::here("analysis/figures/004-keyword-kwic.png"),
+ggsave(here::here("analysis/figures/004-keyword-kwic.jpg"),
        h = 7,
        w = 17)
 

@@ -223,7 +223,7 @@ library(patchwork)
              # heights = c(1, 0.5, 1)
               )
 
-ggsave(here::here("analysis/figures/002-topic-model.png"),
+ggsave(here::here("analysis/figures/002-topic-model.jpg"),
        h = 10,
        w = 12)
 

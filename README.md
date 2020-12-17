@@ -5,9 +5,9 @@
 
 <!-- badges: start -->
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/parkgayoung/bulletinracisminarchy/master?urlpath=rstudio)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/parkgayoung/racisminarchy/master?urlpath=rstudio)
 [![Docker build
-status](https://github.com/parkgayoung/bulletinracisminarchy/workflows/.github/workflows/docker-build.yaml/badge.svg)](https://github.com/parkgayoung/bulletinracisminarchy/actions)
+status](https://github.com/parkgayoung/racisminarchy/workflows/.github/workflows/docker-build.yaml/badge.svg)](https://github.com/parkgayoung/racisminarchy/actions)
 <!-- badges: end -->
 
 This repository contains the data and code for our paper. Our pre-print
@@ -47,7 +47,7 @@ software](https://cloud.r-project.org/) itself and optionally [RStudio
 Desktop](https://rstudio.com/products/rstudio/download/).
 
 The simplest way to explore the text, code and data is to click on
-[binder](https://mybinder.org/v2/gh/parkgayoung/bulletinracisminarchy/master?urlpath=rstudio)
+[binder](https://mybinder.org/v2/gh/parkgayoung/racisminarchy/master?urlpath=rstudio)
 to open an instance of RStudio in your browser, which will have the
 compendium files ready to work with. Binder uses rocker-project.org
 Docker images to ensure a consistent and reproducible computational

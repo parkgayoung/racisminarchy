@@ -230,7 +230,7 @@ plot_grid(all_words_per_year,
           label_size = 12,
           ncol = 1)
 
-ggsave(here::here("analysis/figures/001-keyword-time-series.png"),
+ggsave(here::here("analysis/figures/001-keyword-time-series.jpg"),
        h = 9,
        w = 9)
 
