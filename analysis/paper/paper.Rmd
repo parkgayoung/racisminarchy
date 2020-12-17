@@ -58,23 +58,22 @@ knitr::opts_chunk$set(
 ```{r 001-word-stats-plots}
 source(here::here('analysis/code/001-word-stats-plots.R'))
 ```
- 
+
 ```{r 002-topic-model}
 source(here::here('analysis/code/002-topic-model.R'))
 ```
- 
+
 ```{r 003-word-distances}
 source(here::here('analysis/code/003-word-distances-and-similarities.R'))
 ```
- 
+
 ```{r 004-keyword-in-context}
 source(here::here('analysis/code/004-keyword-in-context.R'))
 ```
- 
+
 ```{r 005-social-event-correlation}
 source(here::here('analysis/code/005-social-event-correlation.R'))
 ```
-
 
 ### Colophon
 
