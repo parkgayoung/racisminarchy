@@ -225,7 +225,9 @@ library(patchwork)
 
 ggsave(here::here("analysis/figures/002-topic-model.jpg"),
        h = 10,
-       w = 12)
+       w = 12,
+       scale = 3,
+       units = "cm")
 
 
 
