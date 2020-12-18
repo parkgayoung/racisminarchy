@@ -187,4 +187,6 @@ gg + sp + plot_layout(ncol = 1,
 
 ggsave(here::here("analysis/figures/005-keyword-and-event-relationships.jpg"),
        h = 8,
-       w = 10)
+       w = 10,
+       scale = 2.7,
+       units = "cm")
