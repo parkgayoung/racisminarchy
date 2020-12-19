@@ -161,9 +161,9 @@ library(cowplot)
 plot_grid(plotlist = kwic_plots, nrow = 2)
 
 ggsave(here::here("analysis/figures/004-keyword-kwic.jpg"),
-       h = 5.7,
-       w = 13,
-       scale = 3.4,
+       h = 4.7,
+       w = 10,
+       scale = 4.1,
        units = "cm")
 
 # check distributions of tfidf

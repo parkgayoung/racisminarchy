@@ -90,10 +90,11 @@ ggplot(list_simil_tbl) +
   guides(size = FALSE)
 
 ggsave(here::here("analysis/figures/003-keyword-similar-words.jpg"),
-       h = 5.3,
-       w = 13,
-       scale = 3.4,
-       units = "cm")
+       h = 4,
+       w = 10,
+       scale = 4,
+       units = "cm",
+       dpi = "retina")
 
 #-----------------------------------------------------------------------
 #-----------------------------------------------------------------------
