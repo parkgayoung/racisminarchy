@@ -2,6 +2,8 @@
 library(quanteda)
 library(stm)
 
+race_words <- c("race", "racism", "racial", "racist")
+
 all_text <- readRDS(here::here("analysis","data", "saa_abstracts.rds"))
 names_all_text <- names(all_text)
 
@@ -47,7 +49,7 @@ all_text_c_dtm <-
 
 # check freq of race words
 featfreq_out <- featfreq(all_text_c_dtm)
-featfreq_out[names(featfreq_out) %in% c("race", "racism", "racial")]
+featfreq_out[names(featfreq_out) %in% race_words ]
 
 # keep only words occurring >= 10 times and in >= 2 documents
 all_text_c_dtm_trim <-
@@ -57,7 +59,7 @@ dfm_trim(all_text_c_dtm,
 
 # check freq of race words
 featfreq_out2 <- featfreq(all_text_c_dtm_trim)
-featfreq_out2[names(featfreq_out2) %in% c("race", "racism", "racial")]
+featfreq_out2[names(featfreq_out2) %in% race_words]
 
 rm(featfreq_out2, featfreq_out)
 rm(all_text_c_dtm)
@@ -66,6 +68,7 @@ rm(all_text)
 
 # set random number (100) for setting seed  to get same result for every run
 set.seed(100)
+
 saaFit <- stm(all_text_c_dtm_trim,
               K = 0,
               max.em.its = 50,
@@ -74,7 +77,7 @@ saaFit <- stm(all_text_c_dtm_trim,
 
 # Find topics that contain user specified words.
 sl <- sageLabels(saaFit, n = 3000)
-race_topics <- findTopic(sl, c("race", "racist", "racial", "racism")) #
+race_topics <- findTopic(sl, race_words) #
 
 labelTopics(saaFit, race_topics)
 
