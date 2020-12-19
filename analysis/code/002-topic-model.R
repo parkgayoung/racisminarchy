@@ -230,10 +230,11 @@ library(patchwork)
               )
 
 ggsave(here::here("analysis/figures/002-topic-model.jpg"),
-       h = 10,
-       w = 12,
-       scale = 3,
-       units = "cm")
+       h = 8.3,
+       w = 10,
+       scale = 3.3,
+       units = "cm",
+       dpi = "retina")
 
 
 
