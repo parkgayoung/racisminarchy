@@ -236,9 +236,9 @@ jpgfile <- here::here("analysis/figures/001-keyword-time-series.jpg")
 
 library(ragg)
 
-# write PNG file
+# write PNG file with desired size and resolution
 agg_png(pngfile,
-        width = 13,
+        width = 12,
         height = 13,
         units = "cm",
         res = 300,
@@ -256,10 +256,6 @@ image_write(png_2_jpg, jpgfile, density = 300, quality = 100)
 # check the JPG, should be 300 dpi
 # may need to adjust base_size, label_size, aelement_text(size, and other
 # text size values to make it look the right size in the JPG
-
-
-
-
 
 
 

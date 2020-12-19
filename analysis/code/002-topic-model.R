@@ -134,14 +134,14 @@ gamma_terms %>%
   top_n(20, gamma) %>%
   ggplot(aes(topic, gamma, label = terms, fill = topic)) +
   geom_col(show.legend = FALSE) +
-  geom_text(hjust = 0, nudge_y = 0.0005, size = 3) +
+  geom_text(hjust = 0, nudge_y = 0.0005, size = 5.6) +
   coord_flip() +
   scale_y_continuous(expand = c(0,0),
                      limits = c(0, 0.09),
                      labels = scales::percent_format()) +
   theme(plot.title = element_text(size = 16),
         plot.subtitle = element_text(size = 13)) +
-  theme_bw() +
+  theme_bw(base_size = 30) +
   scale_fill_viridis_d() +
   labs(x = NULL, y = expression(gamma))
 
@@ -151,14 +151,14 @@ gamma_terms %>%
   filter(parse_number(as.character(topic)) %in% race_topics) %>%
   ggplot(aes(topic, gamma, label = terms, fill = topic)) +
   geom_col(show.legend = FALSE) +
-  geom_text(hjust = 0, nudge_y = 0.0005, size = 3) +
+  geom_text(hjust = 0, nudge_y = 0.0005, size = 6.2) +
   coord_flip() +
   scale_y_continuous(expand = c(0,0),
                      limits = c(0, 0.09),
                      labels = scales::percent_format()) +
   theme(plot.title = element_text(size = 16),
         plot.subtitle = element_text(size = 13)) +
-  theme_bw() +
+  theme_bw(base_size = 30) +
   scale_fill_viridis_d() +
   labs(x = NULL, y = expression(gamma))
 
@@ -208,34 +208,65 @@ topics_time_series <-
                  colour = topics,
                  group = topics)) +
   scale_y_log10() +
-  theme_bw() +
+  theme_bw(base_size = 30) +
   guides(colour = guide_legend(nrow = 2,
                               byrow = TRUE,
                               title = "Topics including race"
     )) +
   theme(legend.position = c(0.45, 0.8),
-        legend.title = element_text(size = 10),
-        legend.text = element_text(size = 5,
-                                   margin = margin(r = 2,
+        legend.title = element_text(size = 30),
+        legend.text = element_text(size = 18,
+                                   margin = margin(
+                                     t = 10,
+                                     r = 6,
                                                    unit = "pt")),
-        legend.spacing.y = unit(0.1, 'pt'),
-        legend.spacing.x = unit(0.1, 'pt')) +
+        legend.spacing.y = unit(0.3, 'pt'),
+        legend.spacing.x = unit(0.3, 'pt')) +
   labs(x = "Year",
        y = "Probability that a document is generated from a topic")
 
-library(patchwork)
-(top_topics_plot + race_topics_plot) / topics_time_series +
-  plot_layout(ncol = 1,
+
+# (top_topics_plot + race_topics_plot) / topics_time_series +
+#  plot_layout(ncol = 1,
              # heights = c(1, 0.5, 1)
-              )
+#              )
 
-ggsave(here::here("analysis/figures/002-topic-model.jpg"),
-       h = 8.3,
-       w = 10,
-       scale = 3.3,
-       units = "cm",
-       dpi = "retina")
+# ggsave(here::here("analysis/figures/002-topic-model.jpg"),
+#        h = 8.3,
+#        w = 10,
+#        scale = 3.3,
+#        units = "cm",
+#        dpi = "retina")
 
+
+
+p_2 <- (top_topics_plot + race_topics_plot) / topics_time_series +
+  plot_layout(ncol = 1,
+              # heights = c(1, 0.5, 1)
+  )
+
+
+pngfile_2 <- here::here("analysis/figures/002-topic-model.png")
+jpgfile_2 <- here::here("analysis/figures/002-topic-model.jpg")
+
+library(ragg)
+
+# write PNG file with desired size and resolution
+agg_png(pngfile_2,
+        width = 13,
+        height = 12,
+        units = "cm",
+        res = 300,
+        scaling = 0.2)
+p_2
+
+invisible(dev.off())
+
+# convert PNG to JPG
+library(magick)
+img_in_2 <- image_read(pngfile_2)
+png_2_jpg_2 <- image_convert(img_in_2, "jpg")
+image_write(png_2_jpg_2, jpgfile_2, density = 300, quality = 100)
 
 
 
