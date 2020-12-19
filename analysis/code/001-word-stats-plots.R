@@ -184,7 +184,7 @@ all_txts_c_summary_join_abstract <-
   all_txts_c_summary %>%
   left_join(saa_abstract) %>%
   select(Text, Tokens, number_of_abstracts, year) %>%
-  mutate(`word/abstract` = Tokens/number_of_abstracts)
+  mutate(`words/abstract` = Tokens/number_of_abstracts)
 
 # two figures to be combined to the first figure in the manuscript
 # all word per year
@@ -241,7 +241,7 @@ agg_png(pngfile,
         width = 13,
         height = 13,
         units = "cm",
-        res = 300,
+        res = 1000,
         scaling = 0.2)
 p
 
@@ -251,7 +251,7 @@ invisible(dev.off())
 library(magick)
 img_in <- image_read(pngfile)
 png_2_jpg <- image_convert(img_in, "jpg")
-image_write(png_2_jpg, jpgfile, density = 300, quality = 100)
+image_write(png_2_jpg, jpgfile, density = 1000, quality = 100)
 
 # check the JPG, should be 300 dpi
 # may need to adjust base_size, label_size, aelement_text(size, and other
