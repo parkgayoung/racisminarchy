@@ -256,7 +256,7 @@ agg_png(pngfile_2,
         width = 13,
         height = 12,
         units = "cm",
-        res = 300,
+        res = 1000,
         scaling = 0.2)
 p_2
 
@@ -266,7 +266,7 @@ invisible(dev.off())
 library(magick)
 img_in_2 <- image_read(pngfile_2)
 png_2_jpg_2 <- image_convert(img_in_2, "jpg")
-image_write(png_2_jpg_2, jpgfile_2, density = 300, quality = 100)
+image_write(png_2_jpg_2, jpgfile_2, density = 1000, quality = 100)
 
 
 
