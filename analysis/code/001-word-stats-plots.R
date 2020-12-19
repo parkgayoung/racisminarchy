@@ -172,10 +172,10 @@ keyword_proportion_per_year <-
                      name = "Year") +
   scale_y_continuous(name = "Proportion of keywords per year",
                      labels = scales::comma) +
-  theme_minimal() +
+  theme_minimal(base_size = 30) +
   theme(axis.text.x = element_text(angle = 90,
                                    vjust = 0.5),
-        strip.text = element_text(size = 12))
+        strip.text = element_text(size = 30))
 
 #-----------------------------------------------------------------------
 #-----------------------------------------------------------------------
@@ -199,7 +199,7 @@ all_words_per_year <-
   scale_y_continuous(labels = scales::comma(c(seq(0, 800000, 200000))),
                      breaks = seq(0, 800000, 200000),
                      name = "all words") +
-  theme_minimal() +
+  theme_minimal(base_size = 30) +
   theme(axis.text.x = element_text(angle = 90,
                                    vjust = 0.5))
 
@@ -215,24 +215,54 @@ all_words_per_abstracts_per_year <-
   scale_y_continuous(labels = c(seq(0, 180, 50)),
                      breaks = seq(0, 180, 50),
                      name = "word/abstract") +
-  theme_minimal() +
+  theme_minimal(base_size = 30) +
   theme(axis.text.x = element_text(angle = 90,
                                    vjust = 0.5))
 
 # combine three plots
 library(cowplot)
 
+p <-
 plot_grid(all_words_per_year,
           all_words_per_abstracts_per_year,
           keyword_proportion_per_year,
           rel_heights = c(0.5, 0.5, 1.2),
           labels = c('A', 'B', 'C'),
-          label_size = 12,
+          label_size = 30,
           ncol = 1)
 
-ggsave(here::here("analysis/figures/001-keyword-time-series.jpg"),
-       h = 9,
-       w = 9,
-       scale = 2.5,
-       units = "cm")
+pngfile <- here::here("analysis/figures/001-keyword-time-series.png")
+jpgfile <- here::here("analysis/figures/001-keyword-time-series.jpg")
+
+library(ragg)
+
+# write PNG file
+agg_png(pngfile,
+        width = 13,
+        height = 13,
+        units = "cm",
+        res = 300,
+        scaling = 0.2)
+p
+
+invisible(dev.off())
+
+# convert PNG to JPG
+library(magick)
+img_in <- image_read(pngfile)
+png_2_jpg <- image_convert(img_in, "jpg")
+image_write(png_2_jpg, jpgfile, density = 300, quality = 100)
+
+# check the JPG, should be 300 dpi
+# may need to adjust base_size, label_size, aelement_text(size, and other
+# text size values to make it look the right size in the JPG
+
+
+
+
+
+
+
+
+
 

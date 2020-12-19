@@ -66,16 +66,11 @@ rm(all_text_c_dtm)
 rm(all_text_c)
 rm(all_text)
 
-<<<<<<< HEAD
-set.seed(1)
-
-=======
 # set random number (100) for setting seed  to get same result for every run
 set.seed(100)
->>>>>>> ae35726ffd77aa05e0c47fbbbfd6ede09bedd491
+
 saaFit <- stm(all_text_c_dtm_trim,
               K = 0,
-              seed = 1,
               max.em.its = 50,
               init.type = "Spectral",
               seed = 100)
