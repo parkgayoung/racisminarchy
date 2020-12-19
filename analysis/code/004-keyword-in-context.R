@@ -164,7 +164,8 @@ ggsave(here::here("analysis/figures/004-keyword-kwic.jpg"),
        h = 4.7,
        w = 10,
        scale = 4.1,
-       units = "cm")
+       units = "cm",
+       dpi = "retina")
 
 # check distributions of tfidf
 # histogram of all tfidf values
