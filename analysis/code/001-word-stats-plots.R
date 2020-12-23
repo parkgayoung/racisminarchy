@@ -207,14 +207,14 @@ all_words_per_year <-
 all_words_per_abstracts_per_year <-
   ggplot(data = all_txts_c_summary_join_abstract,
          aes(x = year,
-             y = `word/abstract`)) +
+             y = `words/abstract`)) +
   geom_col() +
   scale_x_continuous(labels = c(seq(1960, 2020, 2)),
                      breaks = seq(1960, 2020, 2),
                      name = "Year") +
   scale_y_continuous(labels = c(seq(0, 180, 50)),
                      breaks = seq(0, 180, 50),
-                     name = "word/abstract") +
+                     name = "words/abstract") +
   theme_minimal(base_size = 30) +
   theme(axis.text.x = element_text(angle = 90,
                                    vjust = 0.5))
