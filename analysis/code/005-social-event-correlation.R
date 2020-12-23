@@ -182,11 +182,35 @@ ggplot(saa_and_history_tbl) +
 
 # put both plots together
 library(patchwork)
-gg + sp + plot_layout(ncol = 1,
+p_5 <- gg + sp + plot_layout(ncol = 1,
                       heights = c(0.3, 1))
 
-ggsave(here::here("analysis/figures/005-keyword-and-event-relationships.jpg"),
-       h = 8,
-       w = 10,
-       scale = 2.7,
-       units = "cm")
+# ggsave(here::here("analysis/figures/005-keyword-and-event-relationships.jpg"),
+#        h = 8,
+#        w = 10,
+#        scale = 2.7,
+#        units = "cm")
+
+
+pngfile_5 <- here::here("analysis/figures/005-keyword-and-event-relationships.png")
+jpgfile_5 <- here::here("analysis/figures/005-keyword-and-event-relationships.jpg")
+
+library(ragg)
+
+# write PNG file with desired size and resolution
+agg_png(pngfile_5,
+        width = 13,
+        height = 10,
+        units = "cm",
+        res = 1000,
+        scaling = 0.5)
+p_5
+
+invisible(dev.off())
+
+# convert PNG to JPG
+library(magick)
+img_in_5 <- image_read(pngfile_5)
+png_5_jpg_5 <- image_convert(img_in_5, "jpg")
+image_write(png_5_jpg_5, jpgfile_5, density = 1000, quality = 100)
+

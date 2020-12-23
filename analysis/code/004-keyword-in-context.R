@@ -158,38 +158,61 @@ ggplot() +
 }
 
 library(cowplot)
-plot_grid(plotlist = kwic_plots, nrow = 2)
+p_4 <- plot_grid(plotlist = kwic_plots, nrow = 2)
 
-ggsave(here::here("analysis/figures/004-keyword-kwic.jpg"),
-       h = 4.7,
-       w = 10,
-       scale = 4.1,
-       units = "cm",
-       dpi = "retina")
+# ggsave(here::here("analysis/figures/004-keyword-kwic.jpg"),
+#        h = 4.7,
+#        w = 10,
+#        scale = 4.1,
+#        units = "cm",
+#        dpi = "retina")
+
+
+
+pngfile_4 <- here::here("analysis/figures/004-keyword-kwic.png")
+jpgfile_4 <- here::here("analysis/figures/004-keyword-kwic.jpg")
+
+library(ragg)
+
+# write PNG file with desired size and resolution
+agg_png(pngfile_4,
+        width = 13,
+        height = 5,
+        units = "cm",
+        res = 1000,
+        scaling = 0.25)
+p_4
+
+invisible(dev.off())
+
+# convert PNG to JPG
+library(magick)
+img_in_4 <- image_read(pngfile_4)
+png_4_jpg_4 <- image_convert(img_in_4, "jpg")
+image_write(png_4_jpg_4, jpgfile_4, density = 1000, quality = 100)
+
 
 # check distributions of tfidf
 # histogram of all tfidf values
-keywords_tfidf_hist_plot <-
-map(pre_post_tfidf, ~.x %>% select(sum_tfidf) %>% pull) %>% unlist %>%
-tibble(x = .) %>%
-  ggplot() +
-  aes(x) +
-  geom_histogram() +
-  scale_x_log10()
-pre_post_tfidf
+# keywords_tfidf_hist_plot <-
+# map(pre_post_tfidf, ~.x %>% select(sum_tfidf) %>% pull) %>% unlist %>%
+# tibble(x = .) %>%
+#   ggplot() +
+#   aes(x) +
+#   geom_histogram() +
+#   scale_x_log10()
+# pre_post_tfidf
+#
+# # histogram of all tfidf values
+# allwords_tfidf_hist_plot <-
+# tibble(x = as.vector(toks_dfm)) %>%
+#   ggplot() +
+#   aes(x) +
+#   geom_histogram() +
+#   scale_x_log10()
+#
+# plot_grid(keywords_tfidf_hist_plot,
+#           allwords_tfidf_hist_plot,
+#           nrow = 2)
 
-# histogram of all tfidf values
-allwords_tfidf_hist_plot <-
-tibble(x = as.vector(toks_dfm)) %>%
-  ggplot() +
-  aes(x) +
-  geom_histogram() +
-  scale_x_log10()
-
-plot_grid(keywords_tfidf_hist_plot,
-          allwords_tfidf_hist_plot,
-          nrow = 2)
-
-
-#-----------------------------------------------------
 

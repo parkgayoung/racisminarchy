@@ -73,7 +73,7 @@ list_simil_tbl <-
 #-----------------------------------------------------------------------
 # this is the figure included in the manuscript
 library(ggrepel)
-ggplot(list_simil_tbl) +
+p_3 <- ggplot(list_simil_tbl) +
   aes( kw, id) +
   geom_text(aes(label = feat,
                       size = corval,
@@ -89,14 +89,36 @@ ggplot(list_simil_tbl) +
        y = "rank") +
   guides(size = FALSE)
 
-ggsave(here::here("analysis/figures/003-keyword-similar-words.jpg"),
-       h = 4,
-       w = 10,
-       scale = 4,
-       units = "cm",
-       dpi = "retina")
+# ggsave(here::here("analysis/figures/003-keyword-similar-words.jpg"),
+#        h = 4,
+#        w = 10,
+#        scale = 4,
+#        units = "cm",
+#        dpi = "retina")
 
-#-----------------------------------------------------------------------
-#-----------------------------------------------------------------------
+
+
+pngfile_3 <- here::here("analysis/figures/003-keyword-similar-words.png")
+jpgfile_3 <- here::here("analysis/figures/003-keyword-similar-words.jpg")
+
+library(ragg)
+
+# write PNG file with desired size and resolution
+agg_png(pngfile_3,
+        width = 13,
+        height = 5,
+        units = "cm",
+        res = 1000,
+        scaling = 0.3)
+p_3
+
+invisible(dev.off())
+
+# convert PNG to JPG
+library(magick)
+img_in_3 <- image_read(pngfile_3)
+png_3_jpg_3 <- image_convert(img_in_3, "jpg")
+image_write(png_3_jpg_3, jpgfile_3, density = 1000, quality = 100)
+
 
 
