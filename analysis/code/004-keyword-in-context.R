@@ -118,13 +118,13 @@ pre_post_tfidf[[i]] <- bind_rows(pre = x_tbl_pre,
 kwic_plots[[i]] <-
 ggplot() +
   geom_text(data = pre_post_tfidf[[i]] %>% filter(pos == "pre"),
-            aes(x  = 2,
+            aes(x  = 4,
                 y = rank,
                 label = featnames,
                 size  = sum_tfidf)
             ) +
   geom_text(data = pre_post_tfidf[[i]] %>% filter(pos == "post"),
-            aes(x  = 8,
+            aes(x  = 10,
                 y = rank,
                 label = featnames,
                 size  = sum_tfidf)
@@ -136,7 +136,7 @@ ggplot() +
                 size  = 6,
             colour = "red") +
   scale_y_reverse() +
-  scale_size(range = c(3, 7)) +
+  scale_size(range = c(2, 8)) +
   guides(size = FALSE) +
   coord_cartesian(xlim = c(0, 10)) +
   # coord_cartesian(ylim = c(10, 0)) +
