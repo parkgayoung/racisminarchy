@@ -80,15 +80,9 @@ ggplot(data = dfm_keywords_tbl,
 # group keywords to three: race, inequality, and discrimination
 dfm_keywords_tbl_groups <-
   convert(dfm_keywords, to = "data.frame") %>%
-  mutate(`race/racial/racism/racist` = racial + race + racism + racist
-#         `inequality/inequalities` = inequality + inequalities,
- #        `discrimination/discriminatory` = discrimination + discriminatory
-) %>%
+  mutate(`race/racial/racism/racist` = racial + race + racism + racist) %>%
   select(doc_id,
-         `race/racial/racism/racist`
-  #       `inequality/inequalities`,
-  #       `discrimination/discriminatory`
-  ) %>%
+         `race/racial/racism/racist`) %>%
   pivot_longer(-doc_id,
                names_to = "keyword",
                values_to = "n") %>%

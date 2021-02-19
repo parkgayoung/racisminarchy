@@ -80,7 +80,7 @@ p_3 <- ggplot(list_simil_tbl) +
   scale_y_reverse() +
   scale_x_discrete(position = "top") +
   theme_classic() +
-  theme(axis.text.x.top  = element_text(size = 25)) +
+  theme(axis.text.x.top  = element_text(size = 2)) +
   labs(x = "",
        y = "rank") +
   guides(size = FALSE)
