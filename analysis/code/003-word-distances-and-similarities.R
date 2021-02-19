@@ -80,7 +80,7 @@ p_3 <- ggplot(list_simil_tbl) +
   scale_y_reverse() +
   scale_x_discrete(position = "top") +
   theme_classic() +
-  theme(axis.text.x.top  = element_text(size = 20)) +
+  theme(axis.text.x.top  = element_text(size = 25)) +
   labs(x = "",
        y = "rank") +
   guides(size = FALSE)
@@ -101,7 +101,7 @@ library(ragg)
 
 # write PNG file with desired size and resolution
 agg_png(pngfile_3,
-        width = 13,
+        width = 8,
         height = 5,
         units = "cm",
         res = 1000,

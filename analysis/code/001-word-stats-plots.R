@@ -80,13 +80,15 @@ ggplot(data = dfm_keywords_tbl,
 # group keywords to three: race, inequality, and discrimination
 dfm_keywords_tbl_groups <-
   convert(dfm_keywords, to = "data.frame") %>%
-  mutate(`race/racial/racism/racist` = racial + race + racism + racist,
-         `inequality/inequalities` = inequality + inequalities,
-         `discrimination/discriminatory` = discrimination + discriminatory) %>%
+  mutate(`race/racial/racism/racist` = racial + race + racism + racist
+#         `inequality/inequalities` = inequality + inequalities,
+ #        `discrimination/discriminatory` = discrimination + discriminatory
+) %>%
   select(doc_id,
-         `race/racial/racism/racist`,
-         `inequality/inequalities`,
-         `discrimination/discriminatory`) %>%
+         `race/racial/racism/racist`
+  #       `inequality/inequalities`,
+  #       `discrimination/discriminatory`
+  ) %>%
   pivot_longer(-doc_id,
                names_to = "keyword",
                values_to = "n") %>%
@@ -168,7 +170,7 @@ keyword_proportion_per_year <-
                      name = "Year") +
   scale_y_continuous(name = "Proportion of keywords per year",
                      labels = scales::comma) +
-  theme_minimal(base_size = 30) +
+  theme_minimal(base_size = 22) +
   theme(axis.text.x = element_text(angle = 90,
                                    vjust = 0.5),
         strip.text = element_text(size = 30))
@@ -195,7 +197,7 @@ all_words_per_year <-
   scale_y_continuous(labels = scales::comma(c(seq(0, 800000, 200000))),
                      breaks = seq(0, 800000, 200000),
                      name = "all words") +
-  theme_minimal(base_size = 30) +
+  theme_minimal(base_size = 22) +
   theme(axis.text.x = element_text(angle = 90,
                                    vjust = 0.5))
 
@@ -211,7 +213,7 @@ all_words_per_abstracts_per_year <-
   scale_y_continuous(labels = c(seq(0, 180, 50)),
                      breaks = seq(0, 180, 50),
                      name = "words/abstract") +
-  theme_minimal(base_size = 30) +
+  theme_minimal(base_size = 22) +
   theme(axis.text.x = element_text(angle = 90,
                                    vjust = 0.5))
 
@@ -235,7 +237,7 @@ library(ragg)
 # write PNG file with desired size and resolution
 agg_png(pngfile,
         width = 12,
-        height = 13,
+        height = 9,
         units = "cm",
         res = 1000,
         scaling = 0.2)
