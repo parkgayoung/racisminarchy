@@ -92,11 +92,7 @@ keywords <-
   c("race",
     "racism",
     "racial",
-    "racist",
-    "inequality",
-    "inequalities",
-    "discrimination",
-    "discriminatory")
+    "racist")
 
 dfm_keywords <-
   dfm_select(all_text_c_dtm,
@@ -185,11 +181,11 @@ library(patchwork)
 p_5 <- gg + sp + plot_layout(ncol = 1,
                       heights = c(0.3, 1))
 
-# ggsave(here::here("analysis/figures/005-keyword-and-event-relationships.jpg"),
-#        h = 8,
-#        w = 10,
-#        scale = 2.7,
-#        units = "cm")
+ggsave(here::here("analysis/figures/005-keyword-and-event-relationships.jpg"),
+        h = 8,
+        w = 10,
+        scale = 2.7,
+        units = "cm")
 
 
 pngfile_5 <- here::here("analysis/figures/005-keyword-and-event-relationships.png")
