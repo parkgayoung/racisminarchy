@@ -1,6 +1,7 @@
 library(quanteda)
 library(tidyverse)
 
+
 # https://quanteda.io/reference/textstat_collocations.html
 
 if(!exists("all_text")){
