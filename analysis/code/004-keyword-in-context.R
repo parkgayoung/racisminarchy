@@ -37,11 +37,7 @@ toks %>%
 multiword <-    c("race",
                     "racism",
                     "racial",
-                    "racist",
-                    "inequality",
-                    "inequalities",
-                    "discrimination",
-                    "discriminatory")
+                    "racist")
 
 #keyword - in- context
 kwic_output <- kwic(toks, pattern = phrase(multiword))
@@ -136,7 +132,7 @@ ggplot() +
             aes(x  = 5,
                 y = 8,
                 label = keyword_n),
-                size  = 4,
+                size  = 6,
             colour = "red") +
   scale_y_reverse() +
   scale_size(range = c(3, 7)) +
@@ -158,14 +154,14 @@ ggplot() +
 }
 
 library(cowplot)
-p_4 <- plot_grid(plotlist = kwic_plots, nrow = 2)
+p_4 <- plot_grid(plotlist = kwic_plots, nrow = 1)
 
-# ggsave(here::here("analysis/figures/004-keyword-kwic.jpg"),
-#        h = 4.7,
-#        w = 10,
-#        scale = 4.1,
-#        units = "cm",
-#        dpi = "retina")
+ggsave(here::here("analysis/figures/004-keyword-kwic.jpg"),
+        h = 4.7,
+        w = 10,
+        scale = 4.1,
+        units = "cm",
+        dpi = "retina")
 
 
 
