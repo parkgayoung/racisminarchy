@@ -31,11 +31,7 @@ keywords <-
   c("race",
     "racism",
     "racial",
-    "racist",
-    "inequality",
-    "inequalities",
-    "discrimination",
-    "discriminatory")
+    "racist")
 
 dfm_keywords <-
   dfm_select(all_text_c_dtm,
