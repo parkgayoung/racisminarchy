@@ -149,9 +149,13 @@ gamma_terms %>%
 race_topics_plot <-
 gamma_terms %>%
   filter(parse_number(as.character(topic)) %in% race_topics) %>%
-  ggplot(aes(topic, gamma, label = terms, fill = topic)) +
+  ggplot(aes(topic, gamma,
+             label = str_wrap(terms, 40),
+             fill = topic)) +
   geom_col(show.legend = FALSE) +
-  geom_text(hjust = 0, nudge_y = 0.0005, size = 6.2) +
+  geom_text(hjust = 0,
+            nudge_y = 0.0005,
+            size = 9) +
   coord_flip() +
   scale_y_continuous(expand = c(0,0),
                      limits = c(0, 0.09),
@@ -164,8 +168,6 @@ gamma_terms %>%
 
 library(patchwork)
 top_topics_plot / race_topics_plot + plot_layout(ncol = 1, heights = c(1, 0.5))
-
-
 
 # which years have high proportions of these topics?
 
@@ -211,11 +213,11 @@ topics_time_series <-
   theme_bw(base_size = 30) +
   guides(colour = guide_legend(nrow = 2,
                               byrow = TRUE,
-                              title = "Topics including race"
+                              title = "Topics including race/racial/racism/racist"
     )) +
-  theme(legend.position = c(0.45, 0.8),
+  theme(legend.position = c(0.45, 0.85),
         legend.title = element_text(size = 30),
-        legend.text = element_text(size = 18,
+        legend.text = element_text(size = 20,
                                    margin = margin(
                                      t = 10,
                                      r = 6,
