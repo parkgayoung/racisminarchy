@@ -1,5 +1,5 @@
 ---
-title: "How do archaeologists write about race and inequality? Computational text analysis of 40 years of Society of American Archaeology Annual Meeting Abstracts."
+title: "How do archaeologists write about race? Computational text analysis of 40 years of Society of American Archaeology Annual Meeting Abstracts."
 author:
   - Myfirstname Mylastname:
       email: fl@oneplace.edu
