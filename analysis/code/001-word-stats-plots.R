@@ -147,7 +147,7 @@ dfm_keywords_tbl_prop <-
                                 str_c("maximum of ", n, " in ", year), NA)) %>%
   arrange(sum_keyword, max_per_class) %>%
   fill(max_per_class) %>%
-  mutate(keyword_sets = paste0(keyword, " (n = ", sum_keyword, ", ", max_per_class, ")"))
+  mutate(keyword_sets = paste0(keyword, ", n = ", sum_keyword, ", ", max_per_class))
 
 # plot of keywords as a proportion of all words per year
 # this is the figure included in the manuscript
@@ -156,18 +156,16 @@ keyword_proportion_per_year <-
          aes(x = year ,
              y = prop)) +
   geom_col() +
-  facet_wrap( ~ keyword_sets,
-              ncol = 1,
-              scales = "free_y") +
   scale_x_continuous(labels = c(seq(1960, 2020, 2)),
                      breaks = seq(1960, 2020, 2),
                      name = "Year") +
-  scale_y_continuous(name = "Proportion of keywords per year",
+  scale_y_continuous(name = "Proportion of all words per year",
                      labels = scales::comma) +
   theme_minimal(base_size = 22) +
   theme(axis.text.x = element_text(angle = 90,
                                    vjust = 0.5),
-        strip.text = element_text(size = 30))
+        strip.text = element_text(size = 30)) +
+  ggtitle(paste0("Race words per year in SAA Meeting abstracts (", dfm_keywords_tbl_prop$keyword_sets[1], ")"))
 
 #-----------------------------------------------------------------------
 #-----------------------------------------------------------------------
@@ -193,7 +191,8 @@ all_words_per_year <-
                      name = "all words") +
   theme_minimal(base_size = 22) +
   theme(axis.text.x = element_text(angle = 90,
-                                   vjust = 0.5))
+                                   vjust = 0.5)) +
+  ggtitle("Total words per year in SAA Meeting abstracts")
 
 # all word per abstract
 all_words_per_abstracts_per_year <-
@@ -209,7 +208,8 @@ all_words_per_abstracts_per_year <-
                      name = "words/abstract") +
   theme_minimal(base_size = 22) +
   theme(axis.text.x = element_text(angle = 90,
-                                   vjust = 0.5))
+                                   vjust = 0.5)) +
+  ggtitle("Average words per abstract in SAA Meeting abstracts")
 
 # combine three plots
 library(cowplot)
@@ -218,9 +218,11 @@ p <-
 plot_grid(all_words_per_year,
           all_words_per_abstracts_per_year,
           keyword_proportion_per_year,
-          rel_heights = c(0.5, 0.5, 1.2),
+          rel_heights = c(0.5, 0.5, 0.5),
           labels = c('A', 'B', 'C'),
           label_size = 30,
+          align = "v",
+          axis = "lr",
           ncol = 1)
 
 pngfile <- here::here("analysis/figures/001-keyword-time-series.png")
