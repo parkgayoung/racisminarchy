@@ -77,11 +77,12 @@ p_3 <- ggplot(list_simil_tbl) +
                 colour = corval)) +
   scale_colour_gradient(low = "blue",
                         high = "red",
-                        name = "Correlation") +
+                        name = "Similarity") +
   scale_y_reverse() +
+  scale_size_continuous(range = c(5, 9)) +
   scale_x_discrete(position = "top") +
   theme_classic() +
-  theme(axis.text.x.top  = element_text(size = 25)) +
+  theme(axis.text.x.top  = element_text(size = 20)) +
   labs(x = "",
        y = "rank") +
   guides(size = FALSE)

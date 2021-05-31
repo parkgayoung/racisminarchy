@@ -21,6 +21,10 @@ event_all_tbl <-
   fill(year) %>%
   filter(nchar(event_all) != 4)
 
+# save a copy of the Wikipedia table locally for future reference
+write_csv(event_all_tbl,
+          here::here("analysis/data/Timeline_of_African-American_history_social_events.csv"))
+
 # events per year
 event_all_tbl_tally <-
 event_all_tbl %>%
@@ -120,7 +124,6 @@ gg1 <-
   )
 
 
-
 # join SAA and history data
 saa_and_history_tbl <-
   event_all_tbl_tally %>%
@@ -149,32 +152,53 @@ saa_and_history_tbl <-
                                   "6 year lag")))
 
 # African-American events on the scatterplot
+# which are events that also happened in a year or
+# lag years when race appeared in an SAA abstract
 n_events_subset <-
-saa_and_history_tbl %>%
-  distinct(year, n) %>%
+event_all_tbl_tally %>%
+  right_join(saa_words_per_year) %>%
+  arrange(year) %>%
+  filter(saa_wordcount != 0) %>%
   pull(n) %>%
-  sum()
+  sum(na.rm = TRUE)
+
+# how many events per plot?
+saa_and_history_tbl_per_lag_plot <-
+saa_and_history_tbl %>%
+  filter(!is.na(value)) %>%
+  group_by(name) %>%
+  summarise(n_events = sum(n, na.rm = TRUE),
+            n_words = sum(value, na.rm = TRUE))
+
+saa_and_history_tbl <-
+  saa_and_history_tbl %>%
+  left_join(saa_and_history_tbl_per_lag_plot) %>%
+  mutate(facet_label = paste0(name, "\n(", n_events, " events, ", n_words, " words)"))
+
 
 # scatter plot
 library(ggpubr)
+library(ggrepel)
+
 sp <-
 ggplot(saa_and_history_tbl) +
   aes(n,
       value) +
-  geom_text(aes(label = year),
-            size = 2) +
+  geom_point(alpha = 0.3) +
+  geom_text_repel(aes(label = year),
+            size = 4) +
   geom_smooth(se = FALSE,
               method = "lm") +
-  stat_cor(label.y = 75,
+  stat_cor(label.y = 70,
            label.x = 8,
            size = 3) +
   stat_regline_equation(label.y = 65,
                         label.x = 8,
                         size = 3) +
   theme_bw(base_size = 12) +
-  labs(x = paste0("African-American historical event annual frequency (n = ", n_events_subset, ")"),
-       y = paste0("Mentions of 'race', etc. (n = ", n_words, ")\nin SAA abstracts (n = ", n_abstracts, ")")) +
-  facet_wrap( ~ name)
+  labs(x = paste0("African-American historical event annual frequency"),
+       y = paste0("Mentions of 'race', etc. (total of ", n_words, ")\nin SAA abstracts (n = ", n_abstracts, ")")) +
+  facet_wrap( ~ facet_label)
 
 # put both plots together
 library(patchwork)
