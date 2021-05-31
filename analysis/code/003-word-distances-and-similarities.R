@@ -1,5 +1,6 @@
 library(tidyverse)
 library(quanteda)
+library(quanteda.textstats)
 
 if(!exists("all_text")){
   all_text <- readRDS(here::here("analysis","data", "saa_abstracts.rds"))
