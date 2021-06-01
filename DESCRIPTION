@@ -37,7 +37,8 @@ Imports: bookdown,
     tidyverse ,
     Rtsne, 
     rsvd,
-    reshape2
+    reshape2,
+    quanteda.textstats
 Suggests: 
     devtools,
     git2r,
