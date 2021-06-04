@@ -2,7 +2,11 @@
 library(quanteda)
 library(stm)
 
-race_words <- c("race", "racism", "racial", "racist")
+race_words <- c(
+                "race", # because "race to stay ahead" etc.
+                "racism",
+                "racial",
+                "racist")
 
 all_text <- readRDS(here::here("analysis","data", "saa_abstracts.rds"))
 names_all_text <- names(all_text)
@@ -29,23 +33,28 @@ custom_stopwords <-
     "annual", "seventh", "ninth",
     "papers", "dataset", "datasets",
     "human", "valley", "maya", "two",
-    "arizona", "one")
+    "arizona", "one", "pro", "ing",
+    "tion", "a.d", "well", "time", "using",
+    "understanding", "material",
+    "ancient", "manuscripts", "central",
+    "recent", "75th", "79th", "80th", "81st", "mas",
+    "com", "archae", "may", "information", "discussant",
+    "american", "resources", "remains",
+    "archacological", "subsistence", "ceramic",
+    "archaeologists", "survey", "changes")
 
 all_text_c_dtm <-
-  dfm(all_text_c,
-      remove = c(stopwords("english"),
-                 custom_stopwords),
-      #stem = TRUE,
-      tolower = TRUE,
-      verbose = TRUE,
-      remove_numbers = TRUE,
-      remove_symbols = TRUE,
-      split_hyphens = TRUE,
-      remove_punct = TRUE)
-
-all_text_c_dtm <-
-  dfm_select(all_text_c_dtm,
-             min_nchar = 3)
+  all_text_c %>%
+  tokens(
+               verbose = TRUE,
+               remove_numbers = TRUE,
+               remove_symbols = TRUE,
+               split_hyphens = TRUE,
+               remove_punct = TRUE) %>%
+  tokens_select(min_nchar = 3) %>%
+  tokens_remove(c(stopwords("english"),
+                  custom_stopwords)) %>%
+  dfm()
 
 # check freq of race words
 featfreq_out <- featfreq(all_text_c_dtm)
