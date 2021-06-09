@@ -9,5 +9,11 @@ saa_simil<- load.image(here::here("analysis/figures/003-keyword-similar-words.jp
 ha_simil <- load.image(here::here("analysis/figures/003-ha-keyword-similar-words.jpg"))
 
 
-#combine figures from both SAA and HA
+# combine figures from both SAA and HA
 imappend(list(saa_simil, ha_simil),"x") %>% plot
+
+
+# combine figures using cowplot
+library(cowplot)
+
+plot_grid(saa_simil, ha_)
