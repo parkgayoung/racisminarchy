@@ -1,7 +1,6 @@
 library(quanteda)
 library(tidyverse)
 
-
 # https://quanteda.io/reference/textstat_collocations.html
 
 if(!exists("all_text")){
@@ -19,8 +18,6 @@ if(!exists("all_text_c")){
                  remove_punct = TRUE,
                  remove_symbols = TRUE,
                  remove_numbers = TRUE)
-
-
 
 # what are the tfidf values overall,
 # so we can compare to the values in the kwik
@@ -157,13 +154,6 @@ ggplot() +
 
 library(cowplot)
 p_4 <- plot_grid(plotlist = kwic_plots, nrow = 1)
-
-ggsave(here::here("analysis/figures/004-keyword-kwic.jpg"),
-        h = 4.7,
-        w = 10,
-        scale = 4.1,
-        units = "cm",
-        dpi = "retina")
 
 pngfile_4 <- here::here("analysis/figures/004-keyword-kwic.png")
 jpgfile_4 <- here::here("analysis/figures/004-keyword-kwic.jpg")

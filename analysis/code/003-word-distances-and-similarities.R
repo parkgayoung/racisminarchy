@@ -47,7 +47,6 @@ all_years_text_in_chuncks_flat3 <- unlist(all_years_text_in_chuncks_flat2)
 
 all_text <- all_years_text_in_chuncks_flat3
 
-
 # end split -----------------------------------------------
 
 # count all words for each year
@@ -128,15 +127,6 @@ p_3 <- ggplot(list_simil_tbl) +
   labs(x = "",
        y = "rank") +
   guides(size = FALSE)
-
-# ggsave(here::here("analysis/figures/003-keyword-similar-words.jpg"),
-#        h = 4,
-#        w = 10,
-#        scale = 4,
-#        units = "cm",
-#        dpi = "retina")
-
-
 
 pngfile_3 <- here::here("analysis/figures/003-keyword-similar-words.png")
 jpgfile_3 <- here::here("analysis/figures/003-keyword-similar-words.jpg")
