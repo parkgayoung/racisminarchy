@@ -51,32 +51,6 @@ dfm_keywords_tbl <-
          cumsum = cumsum(n)) %>%
   mutate(keyword_n = str_c(keyword, " (n = ", sum, ")"))
 
-# make hline for cumsum
-cumsum_single_word <-
-  dfm_keywords_tbl %>%
-  filter(cumsum > sum/2 ) %>%
-  group_by(keyword_n) %>%
-  filter(cumsum == min(cumsum))
-
-# plot of frequency of keywords per year
-ggplot(data = dfm_keywords_tbl,
-       aes(x = year ,
-           y = n)) +
-  geom_col() +
-  geom_vline(data = cumsum_single_word,
-             aes(xintercept = year),
-             color = "red") +
-  facet_wrap( ~ keyword_n,
-              ncol = 1,
-              scales = "free_y") +
-  scale_x_continuous(labels = c(seq(1960, 2020, 2)),
-                     breaks = seq(1960, 2020, 2),
-                     name = "Year") +
-  scale_y_continuous(name = "Frequency of keyword per year") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90,
-                                   vjust = 0.5))
-
 # group keywords to three: race, inequality, and discrimination
 dfm_keywords_tbl_groups <-
   convert(dfm_keywords, to = "data.frame") %>%
@@ -93,38 +67,6 @@ dfm_keywords_tbl_groups <-
          cumsum_keyword = cumsum(n)) %>%
   mutate(keyword_n = str_c(keyword, " (n = ", sum_keyword, ")"))
 
-# make hline for mean
-mean_the_word <-
-  dfm_keywords_tbl_groups %>%
-  distinct(keyword_n, mean_keyword)
-
-# make vline for cumsum
-cumsum_the_word <-
-  dfm_keywords_tbl_groups %>%
-  filter(cumsum_keyword > sum_keyword/2 ) %>%
-  group_by(keyword_n) %>%
-  filter(cumsum_keyword == min(cumsum_keyword))
-
-#-----------------------------------------------------------------------
-#-----------------------------------------------------------------------
-# count of each keyword groups
-word_three_groups <-
-  ggplot(data = dfm_keywords_tbl_groups,
-       aes(x = year,
-           y = n)) +
-  geom_col() +
-  facet_wrap( ~ keyword_n,
-              ncol = 1,
-              scales = "free_y") +
-  scale_x_continuous(labels = c(seq(1960, 2020, 2)),
-                     breaks = seq(1960, 2020, 2),
-                     name = "Year") +
-  scale_y_continuous(name = "Frequency of keyword per year") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90,
-                                   vjust = 0.5))
-
-#-----------------------------------------------------------------------
 #-----------------------------------------------------------------------
 # load dfs of all text and abstract and join
 all_txts_c_summary <-
@@ -167,7 +109,7 @@ keyword_proportion_per_year <-
         strip.text = element_text(size = 30)) +
   ggtitle(paste0("Race words per year in SAA Meeting abstracts (", dfm_keywords_tbl_prop$keyword_sets[1], ")"))
 
-#-----------------------------------------------------------------------
+
 #-----------------------------------------------------------------------
 
 all_txts_c_summary_join_abstract <-

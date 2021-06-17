@@ -8,6 +8,48 @@ if(!exists("all_text")){
 
 names_all_text <- names(all_text)
 
+# split every n words -------------------------------------------
+# smaller 'documents' gives more distinctive topics, ideally it would be
+# one document per abstract, but we would need to manually mark each abstract
+
+chunk_size <- 5000
+word_count_by_year <-
+  map(all_text,
+      str_count)
+
+all_years_text_in_chuncks <-
+  map(all_text,
+      ~split(str_split(.x, " ")[[1]],
+             ceiling(seq_along(str_split(.x, " ")[[1]])/ chunk_size )))
+
+library(purrr)
+all_years_text_in_chuncks_flat <- flatten(all_years_text_in_chuncks)
+
+# get names for chunks that include years
+chunks_per_year <-
+  map(all_years_text_in_chuncks, length)
+
+chunk_names <-
+  map2(chunks_per_year,
+       names(chunks_per_year),
+       ~rep(.y, .x)) %>%
+  unlist() %>%
+  unname() %>%
+  make.unique()
+
+names(all_years_text_in_chuncks_flat) <- chunk_names
+
+all_years_text_in_chuncks_flat2  <-
+  map(all_years_text_in_chuncks_flat,
+      ~paste0(.x, collapse = " "))
+
+all_years_text_in_chuncks_flat3 <- unlist(all_years_text_in_chuncks_flat2)
+
+all_text <- all_years_text_in_chuncks_flat3
+
+
+# end split -----------------------------------------------
+
 # count all words for each year
 if(!exists("all_text_c")){
 all_text_c <- corpus(all_text)
