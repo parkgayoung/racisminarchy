@@ -1,30 +1,9 @@
 library(tidyverse)
 library(quanteda)
 
-# read in all txt files of SAA abstracts from 1962 to 2020. Data is from SAA website and scanned images of text is converted to PDF using OCR
-# the code for OCR is here: https://github.com/benmarwick/saa-meeting-abstracts/blob/master/code/001-PDF-page-images-to-txt.R
-# this is a character vector, one abstract per element
-# can skip code between line 12 and line 24 (skip the code before that line to save time)
-
-all_text <- readRDS(here::here("analysis","data", "saa_abstracts.rds"))
-
-# count all words for each year (skip this and run line 143)
-all_text_c <- corpus(all_text)
-all_txts_c_summary <-
-  summary(all_text_c) %>%
-  mutate(year = parse_number(Text))
-
-# make a dfm (skip this, and run line 26)
-all_text_c_dtm <-
-  dfm(all_text_c,
-      remove = stopwords("english"),
-      stem = TRUE,
-      verbose = TRUE,
-      remove_punct = TRUE)
-
-# read from data file
-all_text_c_dtm <-
-  readRDS(here::here("analysis","data", "all_text_c_dtm.rds"))
+# load data that we previously prepared
+all_text_c_dtm <- readRDS(here::here("analysis/data/all_text_c_dtm.rds"))
+all_txts_c_summary <- readRDS(here::here("analysis/data/all_txts_c_summary.rds"))
 
 # Explore key words over time
 keywords <-
@@ -37,7 +16,6 @@ dfm_keywords <-
   dfm_select(all_text_c_dtm,
              pattern = keywords,
              selection = "keep")
-# saveRDS(dfm_keywords, here::here("analysis","data","dfm_keywords.rds"))
 
 dfm_keywords_tbl <-
   convert(dfm_keywords, to = "data.frame") %>%
@@ -51,7 +29,7 @@ dfm_keywords_tbl <-
          cumsum = cumsum(n)) %>%
   mutate(keyword_n = str_c(keyword, " (n = ", sum, ")"))
 
-# group keywords to three: race, inequality, and discrimination
+# group keywords
 dfm_keywords_tbl_groups <-
   convert(dfm_keywords, to = "data.frame") %>%
   mutate(`race/racial/racism/racist` = racial + race + racism + racist) %>%
@@ -68,9 +46,7 @@ dfm_keywords_tbl_groups <-
   mutate(keyword_n = str_c(keyword, " (n = ", sum_keyword, ")"))
 
 #-----------------------------------------------------------------------
-# load dfs of all text and abstract and join
-all_txts_c_summary <-
-  readRDS(here::here("analysis","data", "all_text_c_summary.rds"))
+
 library(readxl)
 saa_abstract <-
   read_excel(here::here("analysis","data", "saa-abstracts-tally.xlsx"))

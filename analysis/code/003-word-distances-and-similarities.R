@@ -79,6 +79,12 @@ dfm_keywords <-
              pattern = keywords,
              selection = "keep")
 
+# drop some words
+all_text_c_dtm <-
+  dfm_select(all_text_c_dtm,
+             pattern = c("81st", "contexto", "arqueológicas"),
+             selection = "remove")
+
 # similarities for specific documents for keywords
 
 # compute similarities between features using relative frequency
