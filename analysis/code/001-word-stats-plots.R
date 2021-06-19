@@ -1,7 +1,7 @@
 library(tidyverse)
 library(quanteda)
 
-# load data that we previously prepared
+# load data that we previously prepared in 000-
 all_text_c_dtm <- readRDS(here::here("analysis/data/all_text_c_dtm.rds"))
 all_txts_c_summary <- readRDS(here::here("analysis/data/all_txts_c_summary.rds"))
 

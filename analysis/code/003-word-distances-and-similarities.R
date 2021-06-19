@@ -2,11 +2,9 @@ library(tidyverse)
 library(quanteda)
 library(quanteda.textstats)
 
-if(!exists("all_text")){
-  all_text <- readRDS(here::here("analysis","data", "saa_abstracts.rds"))
+if(!exists("all_text_clean")){
+  all_text_clean <- readRDS(here::here("analysis","data", "all_text_clean.rds"))
 }
-
-names_all_text <- names(all_text)
 
 # split every n words -------------------------------------------
 # smaller 'documents' gives more distinctive topics, ideally it would be
@@ -14,11 +12,11 @@ names_all_text <- names(all_text)
 
 chunk_size <- 5000
 word_count_by_year <-
-  map(all_text,
+  map(all_text_clean,
       str_count)
 
 all_years_text_in_chuncks <-
-  map(all_text,
+  map(all_text_clean,
       ~split(str_split(.x, " ")[[1]],
              ceiling(seq_along(str_split(.x, " ")[[1]])/ chunk_size )))
 
@@ -45,27 +43,26 @@ all_years_text_in_chuncks_flat2  <-
 
 all_years_text_in_chuncks_flat3 <- unlist(all_years_text_in_chuncks_flat2)
 
-all_text <- all_years_text_in_chuncks_flat3
+all_text_clean_chunks <- all_years_text_in_chuncks_flat3
 
 # end split -----------------------------------------------
 
 # count all words for each year
-if(!exists("all_text_c")){
-all_text_c <- corpus(all_text)
-}
+all_text_c <- corpus(all_text_clean_chunks)
 
 # don't remove any stopwords
-if(!exists("all_text_c_dtm")){
-  all_text_c_dtm <-
-    dfm(all_text_c,
-        tolower = TRUE,
-        verbose = TRUE,
-        remove_numbers = TRUE,
-        remove_symbols = TRUE,
-        split_hyphens = TRUE,
-        remove_punct = TRUE)
-
-}
+all_text_c_dtm_no_stop <-
+  all_text_c %>%
+  tokens(
+    verbose = TRUE,
+    remove_numbers = TRUE,
+    remove_symbols = TRUE,
+    split_hyphens = TRUE,
+    remove_punct = TRUE) %>%
+  tokens_select(min_nchar = 3) %>%
+  dfm() %>%
+  dfm_select(pattern = c("81st", "contexto", "arqueológicas"),
+             selection = "remove")
 
 # Explore key words over time
 keywords <-
@@ -75,21 +72,15 @@ keywords <-
     "racist")
 
 dfm_keywords <-
-  dfm_select(all_text_c_dtm,
+  dfm_select(all_text_c_dtm_no_stop,
              pattern = keywords,
              selection = "keep")
-
-# drop some words
-all_text_c_dtm <-
-  dfm_select(all_text_c_dtm,
-             pattern = c("81st", "contexto", "arqueológicas"),
-             selection = "remove")
 
 # similarities for specific documents for keywords
 
 # compute similarities between features using relative frequency
 simi_all <-
-  all_text_c_dtm %>%
+  all_text_c_dtm_no_stop %>%
   dfm_select(min_nchar = 4) %>%
   dfm_trim(min_termfreq = 100,
            min_docfreq = 5) %>%

@@ -9,8 +9,8 @@ race_words <- c(
                 "racial",
                 "racist")
 
-all_text <- readRDS(here::here("analysis","data", "saa_abstracts.rds"))
-names_all_text <- names(all_text)
+all_text_clean <- readRDS(here::here("analysis","data", "all_text_clean.rds"))
+names_all_text_clean <- names(all_text_clean)
 
 # split every n words -------------------------------------------
 # smaller 'documents' gives more distinctive topics, ideally it would be
@@ -18,11 +18,11 @@ names_all_text <- names(all_text)
 
 chunk_size <- 5000
 word_count_by_year <-
-map(all_text,
+map(all_text_clean,
     str_count)
 
 all_years_text_in_chuncks <-
-map(all_text,
+map(all_text_clean,
     ~split(str_split(.x, " ")[[1]],
            ceiling(seq_along(str_split(.x, " ")[[1]])/ chunk_size )))
 
@@ -49,13 +49,13 @@ all_years_text_in_chuncks_flat2  <-
 
 all_years_text_in_chuncks_flat3 <- unlist(all_years_text_in_chuncks_flat2)
 
-all_text <- all_years_text_in_chuncks_flat3
+all_text_clean_chunks <- all_years_text_in_chuncks_flat3
 
 
 # end split -----------------------------------------------
 
 # count all words for each year
-all_text_c <- corpus(all_text)
+all_text_c <- corpus(all_text_clean_chunks)
 
 # make a dfm
 custom_stopwords <-
@@ -88,12 +88,11 @@ custom_stopwords <-
     "del", "los", "que", "las", "una", "casa", "con",
     "john", "mark", "smith", "chan", "price", "richards",
     "poster", "symposium", "several", "model", "models",
-    "para", "por", "como", "session", "general"
+    "para", "por", "como", "session", "general", "forum"
    # "work"
    # "north", "south", "east", "west"
    # "project"
    # "83rd", "84th", "85th"
-   # "forum",
    # "first",
    # "production"
    )

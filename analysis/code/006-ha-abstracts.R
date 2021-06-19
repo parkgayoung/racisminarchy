@@ -5,9 +5,15 @@ library(quanteda)
 
 ha_abstracts <- read_csv("analysis/data/ha_titles_abstracts_years_df.csv")
 
+# how many abstracts?
+nrow(ha_abstracts)
+
+# spanning what years?
+range(ha_abstracts$year)
+
 # our steps
 
-# count all words for each year (skip this and run line 143)
+# count all words for each year
 all_text_c_ha <- corpus(ha_abstracts$abstract)
 docnames(all_text_c_ha) <-  ha_abstracts$year
 
@@ -63,6 +69,14 @@ dfm_keywords_ha_tbl <-
             annual_n_words_in_all_abstracts = sum(total_words_in_abstract),
             annual_n_words_per_abstract = annual_n_words_in_all_abstracts / annual_abstracts,
             prop_keywords = annual_n_keywords / annual_n_words_in_all_abstracts)
+
+# How many after 2010?
+perc_of_keywords_after_2010
+dfm_keywords_ha_tbl %>%
+  filter(year >= 2010) %>%
+  pull(annual_n_keywords) %>%
+  sum / n_keywords_ha * 100
+
 
 # plot of keywords as a proportion of all words per year
 # this is the figure included in the manuscript
@@ -129,8 +143,8 @@ ha_p <-
             axis = "lr",
             ncol = 1)
 
-pngfile <- here::here("analysis/figures/001-ha_keyword-time-series.png")
-jpgfile <- here::here("analysis/figures/001-ha_keyword-time-series.jpg")
+# pngfile <- here::here("analysis/figures/006-ha_keyword-time-series.png")
+# jpgfile <- here::here("analysis/figures/006-ha_keyword-time-series.jpg")
 
 library(ragg)
 
@@ -154,6 +168,55 @@ image_write(png_2_jpg, jpgfile, density = 1000, quality = 100)
 # check the JPG, should be 300 dpi
 # may need to adjust base_size, label_size, aelement_text(size, and other
 # text size values to make it look the right size in the JPG
+
+
+# better comparison is a boxplot of SAA and HA counts
+both_associations <-
+tibble(
+  source = c(rep("Historical Archaeology",  nrow(dfm_keywords_ha_tbl)),
+             rep("Society of American Archaeology", nrow(dfm_keywords_tbl_prop))),
+
+  prop =  c(dfm_keywords_ha_tbl$prop_keywords,
+         dfm_keywords_tbl_prop$prop)
+) %>%
+  filter(prop > 0)
+
+library(ggbeeswarm)
+both_associations_plot <-
+ggplot(both_associations) +
+  aes(source,
+      prop) +
+  geom_boxplot() +
+  geom_beeswarm(alpha = 0.3,
+                size = 5,
+                cex = 4) +
+  scale_y_log10(name = "Proportion of all words per year",
+                     labels = scales::comma) +
+  theme_minimal(base_size = 16) +
+  labs(x = "")
+
+pngfile <- here::here("analysis/figures/006-ha-saa-boxplot.png")
+jpgfile <- here::here("analysis/figures/006-ha-saa-boxplot.jpg")
+
+library(ragg)
+
+# write PNG file with desired size and resolution
+agg_png(pngfile,
+        width = 4,
+        height = 3,
+        units = "cm",
+        res = 1000,
+        scaling = 0.2)
+
+both_associations_plot
+
+invisible(dev.off())
+
+# convert PNG to JPG
+library(magick)
+img_in <- image_read(pngfile)
+png_2_jpg <- image_convert(img_in, "jpg")
+image_write(png_2_jpg, jpgfile, density = 1000, quality = 100)
 
 
 

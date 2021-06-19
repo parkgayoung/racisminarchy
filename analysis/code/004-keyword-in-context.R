@@ -2,14 +2,15 @@ library(quanteda)
 library(tidyverse)
 
 # https://quanteda.io/reference/textstat_collocations.html
-
-if(!exists("all_text")){
-  all_text <- readRDS(here::here("analysis","data", "saa_abstracts.rds"))
+if(!exists("all_text_clean")){
+  all_text_clean <- readRDS(here::here("analysis","data", "all_text_clean.rds"))
 }
+
+names_all_text_clean <- names(all_text_clean)
 
 # count all words for each year
 if(!exists("all_text_c")){
-  all_text_c <- corpus(all_text)
+  all_text_c <- corpus(all_text_clean)
 }
 
 # tokenize
@@ -34,13 +35,13 @@ toks %>%
 
 #character vector: separating words by whitespaces and wrap the vector by phrase()
 multiword <-    c("race",
-                    "racism",
-                    "racial",
-                    "racist")
+                  "racism",
+                  "racial",
+                  "racist")
 
 #keyword - in- context
 kwic_output <- kwic(toks, pattern = phrase(multiword))
-head(kwic(toks, pattern = phrase(multiword)))
+# head(kwic(toks, pattern = phrase(multiword)))
 
 ## Explore some visualization methods
 kwic_output %>%
@@ -177,7 +178,6 @@ img_in_4 <- image_read(pngfile_4)
 png_4_jpg_4 <- image_convert(img_in_4, "jpg")
 image_write(png_4_jpg_4, jpgfile_4, density = 1000, quality = 100)
 
-
 # check distributions of tfidf
 # histogram of all tfidf values
 # keywords_tfidf_hist_plot <-
@@ -200,5 +200,23 @@ image_write(png_4_jpg_4, jpgfile_4, density = 1000, quality = 100)
 # plot_grid(keywords_tfidf_hist_plot,
 #           allwords_tfidf_hist_plot,
 #           nrow = 2)
+
+
+# look into 'race and x' to see about broader social issues
+toks_ngram <- tokens_ngrams(toks, n = 3)
+head(toks_ngram[[1]], 30)
+
+race_and_bigrams <-
+map(toks_ngram,
+    ~str_subset(.x, "^race_and"))
+
+unlist(race_and_bigrams) %>%
+  tibble(bigram = .) %>%
+  group_by(bigram) %>%
+  tally(sort = TRUE)
+
+# race and class most frequent, six times, all after 2004
+
+
 
 

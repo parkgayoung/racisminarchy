@@ -14,6 +14,10 @@ all_text_clean <-
   map_chr(all_text,
           ~str_remove_all(.x,  "individual abstracts of the") )
 
+# save it for reuse
+saveRDS(all_text_clean,
+        here::here("analysis/data/all_text_clean.rds"))
+
 # count all words for each year
 all_text_c <- corpus(all_text_clean)
 
@@ -26,7 +30,7 @@ all_text_c_dtm <-
          remove_numbers = TRUE,
          remove_url = TRUE,
          remove_separators = TRUE,
-         split_hyphens = FALSE) %>%
+         split_hyphens = TRUE) %>%
   dfm() %>%
   dfm_remove(pattern = stopwords("english"))
 

@@ -71,24 +71,18 @@ library(quanteda)
 # read in all txt files of SAA abstracts from 1962 to 2020. Data is from SAA website and scanned images of text is converted to PDF using OCR
 # the code for OCR is here: https://github.com/benmarwick/saa-meeting-abstracts/blob/master/code/001-PDF-page-images-to-txt.R
 # this is a character vector, one abstract per element
-if(!exists("all_text")){
-  all_text <- readRDS(here::here("analysis","data", "saa_abstracts.rds"))
+if(!exists("all_text_clean")){
+  all_text_clean <- readRDS(here::here("analysis","data", "all_text_clean.rds"))
 }
 
 # count all words for each year
 if(!exists("all_text_c")){
-  all_text_c <- corpus(all_text)
+  all_text_c <- corpus(all_text_clean)
 }
 
 # make a dfm
 if(!exists("all_text_c_dtm")){
-  all_text_c_dtm <-
-    dfm(all_text_c,
-        remove = stopwords("english"),
-        # stem = TRUE,
-        verbose = TRUE,
-        remove_punct = TRUE)
-
+    all_text_c_dtm <- readRDS(here::here("analysis/data/all_text_c_dtm.rds"))
 }
 
 # Explore key words over time
@@ -122,7 +116,6 @@ gg1 <-
        # title = "Histogram of events from Wikipedia's 'Timeline of African-American history'",
        # subtitle = "data from https://en.wikipedia.org/wiki/Timeline_of_African-American_history"
   )
-
 
 # join SAA and history data
 saa_and_history_tbl <-
@@ -198,19 +191,13 @@ ggplot(saa_and_history_tbl) +
   theme_bw(base_size = 12) +
   labs(x = paste0("African-American historical event annual frequency"),
        y = paste0("Mentions of 'race', etc. (total of ", n_words, ")\nin SAA abstracts (n = ", n_abstracts, ")")) +
-  facet_wrap( ~ facet_label)
+  facet_wrap( ~ facet_label) +
+  scale_y_continuous(breaks = scales::pretty_breaks())
 
 # put both plots together
 library(patchwork)
 p_5 <- gg + sp + plot_layout(ncol = 1,
                       heights = c(0.3, 1))
-
-ggsave(here::here("analysis/figures/005-keyword-and-event-relationships.jpg"),
-        h = 8,
-        w = 10,
-        scale = 2.7,
-        units = "cm")
-
 
 pngfile_5 <- here::here("analysis/figures/005-keyword-and-event-relationships.png")
 jpgfile_5 <- here::here("analysis/figures/005-keyword-and-event-relationships.jpg")
@@ -233,4 +220,172 @@ library(magick)
 img_in_5 <- image_read(pngfile_5)
 png_5_jpg_5 <- image_convert(img_in_5, "jpg")
 image_write(png_5_jpg_5, jpgfile_5, density = 1000, quality = 100)
+
+
+# --------------------------------------------------------------
+# what about looking only at protest events that might stimulate
+# expressions of solidarity
+
+protest_event_all_tbl <-
+  event_all_tbl %>%
+  filter(str_detect(event_all, "protest"))
+
+
+# events per year
+protest_event_all_tbl_tally <-
+  protest_event_all_tbl %>%
+  group_by(year) %>%
+  tally(sort = TRUE)
+
+protest_event_all_tbl_tally <-
+  protest_event_all_tbl_tally %>%
+  full_join(
+    tibble(year = seq(min(protest_event_all_tbl_tally$year),
+                      max(protest_event_all_tbl_tally$year),
+                      1))
+  )
+
+n_protest_events = sum(protest_event_all_tbl_tally$n, na.rm = TRUE)
+
+# visualise
+min_year <- min(protest_event_all_tbl$year)
+max_year <- max(protest_event_all_tbl$year)
+
+gg_protest <-
+  ggplot(protest_event_all_tbl) +
+  aes(year) +
+  geom_histogram(binwidth = 1) +
+  theme_bw(base_size = 8) +
+  scale_x_continuous(
+    breaks = seq(1550, max_year,
+                 by = 50)) +
+  labs(x = "Year",
+       y = paste0("African-American\nhistorical protest event annual\nfrequency (n = ", n_protest_events, ")")
+       # title = "Histogram of events from Wikipedia's 'Timeline of African-American history'",
+       # subtitle = "data from https://en.wikipedia.org/wiki/Timeline_of_African-American_history"
+  )
+
+# join SAA and protest history data
+saa_and_protest_history_tbl <-
+  protest_event_all_tbl_tally %>%
+  right_join(saa_words_per_year) %>%
+  arrange(year) %>%
+  replace_na(list(n = 0, saa_wordcount = 0)) %>%
+  mutate(
+    `Same year` = saa_wordcount,
+    `1 year lag` = lag(saa_wordcount),
+    `2 year lag` = lag(saa_wordcount, 2),
+    `3 year lag` = lag(saa_wordcount, 3),
+    `4 year lag` = lag(saa_wordcount, 4),
+    `5 year lag` = lag(saa_wordcount, 5),
+    `6 year lag` = lag(saa_wordcount, 6)
+  ) %>%
+  select(-saa_wordcount,
+         -`Same year`)  %>%
+  pivot_longer(-c(year, n)) %>%
+  mutate(name = factor(name,
+                       levels = c(
+                         "1 year lag",
+                         "2 year lag",
+                         "3 year lag",
+                         "4 year lag",
+                         "5 year lag",
+                         "6 year lag")))
+
+# African-American events on the scatterplot
+# which are events that also happened in a year or
+# lag years when race appeared in an SAA abstract
+n_protest_events_subset <-
+  protest_event_all_tbl_tally %>%
+  right_join(saa_words_per_year) %>%
+  arrange(year) %>%
+  filter(saa_wordcount != 0) %>%
+  pull(n) %>%
+  sum(na.rm = TRUE)
+
+# how many events per plot?
+saa_and_protest_history_tbl_per_lag_plot <-
+  saa_and_protest_history_tbl %>%
+  filter(!is.na(value)) %>%
+  group_by(name) %>%
+  summarise(n_events = sum(n, na.rm = TRUE),
+            n_words = sum(value, na.rm = TRUE))
+
+saa_and_protest_history_tbl <-
+  saa_and_protest_history_tbl %>%
+  left_join(saa_and_protest_history_tbl_per_lag_plot) %>%
+  mutate(facet_label = paste0(name, "\n(", n_events, " events, ", n_words, " words)"))
+
+# protest events scatter plot
+library(ggpubr)
+library(ggrepel)
+
+protest_sp <-
+  ggplot(saa_and_protest_history_tbl) +
+  aes(n,
+      value) +
+  geom_point(alpha = 0.3) +
+  geom_text_repel(aes(label = year),
+                  size = 4) +
+  geom_smooth(se = FALSE,
+              method = "lm") +
+  stat_cor(label.y = 16,
+           label.x = 0.5,
+           size = 3) +
+  stat_regline_equation(label.y = 15,
+                        label.x = 0.5,
+                        size = 3) +
+  theme_bw(base_size = 12) +
+  labs(x = paste0("African-American historical event annual frequency (protests only)"),
+       y = paste0("Mentions of 'race', etc. (total of ", n_words, ")\nin SAA abstracts (n = ", n_abstracts, ")")) +
+  facet_wrap( ~ facet_label, scales = "free_x")
+
+# put both plots together
+library(patchwork)
+p_protest <- gg_protest + protest_sp + plot_layout(ncol = 1,
+                             heights = c(0.3, 1))
+
+# inspect some diagnostics of the significant plots
+# guide to interpretation:
+# https://data.library.virginia.edu/diagnostic-plots/
+# n is protest event
+# value is word count
+saa_and_protest_history_tbl_2yr <-
+  saa_and_protest_history_tbl %>%
+  filter(name == "2 year lag")
+
+two_year <- lm(value ~ n, data = saa_and_protest_history_tbl_2yr)
+summary(two_year)
+library(ggfortify)
+autoplot(two_year, label.size = 5)
+
+saa_and_protest_history_tbl_3yr <-
+  saa_and_protest_history_tbl %>%
+  filter(name == "3 year lag")
+
+three_year <- lm(value ~ n, data = saa_and_protest_history_tbl_3yr)
+summary(three_year)
+library(ggfortify)
+autoplot(three_year, label.size = 5)
+
+# looks like a significant correlation at the 2 and 3 year lag, get the details
+
+saa_protest_two_year_aov <-  aov(value ~ n, data = saa_and_protest_history_tbl_2yr)
+saa_protest_two_year_lm <- lm(value ~ n, data = saa_and_protest_history_tbl_2yr)
+
+apa::anova_apa(saa_protest_two_year_aov)
+ha_and_history_tbl_2yr_lm_summary <- summary(saa_protest_two_year_lm)
+
+adjusted_r_squared <- ha_and_history_tbl_2yr_lm_summary$adj.r.squared
+
+saa_protest_three_year_aov <-  aov(value ~ n, data = saa_and_protest_history_tbl_3yr)
+saa_protest_three_year_lm <- lm(value ~ n, data = saa_and_protest_history_tbl_3yr)
+
+apa::anova_apa(saa_protest_three_year_aov)
+ha_and_history_tbl_3yr_lm_summary <- summary(saa_protest_three_year_lm)
+
+adjusted_r_squared <- ha_and_history_tbl_3yr_lm_summary$adj.r.squared
+
+
+
 
