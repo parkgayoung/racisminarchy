@@ -202,20 +202,46 @@ image_write(png_4_jpg_4, jpgfile_4, density = 1000, quality = 100)
 #           nrow = 2)
 
 
+#-----------------------------------------------------------------
 # look into 'race and x' to see about broader social issues
+# trigrams starting with "race..."
 toks_ngram <- tokens_ngrams(toks, n = 3)
 head(toks_ngram[[1]], 30)
 
-race_and_bigrams <-
+race_and_trigrams <-
 map(toks_ngram,
-    ~str_subset(.x, "^race_and"))
+    ~str_subset(.x, "^race_"))
 
-unlist(race_and_bigrams) %>%
-  tibble(bigram = .) %>%
-  group_by(bigram) %>%
+race_and_trigrams_tbl <-
+unlist(race_and_trigrams) %>%
+  tibble(trigram = .,
+         year = str_sub(names(unlist(race_and_trigrams)), 1,4))
+
+race_and_trigrams_tbl %>%
+  group_by(trigram) %>%
   tally(sort = TRUE)
 
-# race and class most frequent, six times, all after 2004
+# 'class' is in 14
+
+# how many include class or gender
+race_and_class_trigrams <-
+race_and_trigrams_tbl %>%
+  group_by(trigram) %>%
+  tally(sort = TRUE) %>%
+  filter(str_detect(trigram, "class"))
+
+sum(race_and_class_trigrams$n)
+
+# how many include class or gender
+race_and_gender_trigrams <-
+  race_and_trigrams_tbl %>%
+  group_by(trigram) %>%
+  tally(sort = TRUE) %>%
+  filter(str_detect(trigram, "gender"))
+
+sum(race_and_gender_trigrams$n)
+
+# race and class most frequent, 8+ 6 = 14 times, all after 2004
 
 
 
