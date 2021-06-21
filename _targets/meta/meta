@@ -1,0 +1,23 @@
+name|type|data|command|depend|seed|path|time|size|bytes|format|iteration|parent|children|seconds|warnings|error
+paper|stem|8c70f33127ccd14e|b046ac8d0abda880|4745aa592080ea1d|-1335449298|analysis/paper/paper.docx*analysis/paper/paper.Rmd|t18798.7273581315s|4a743849515dc06b|8980072|file|vector|||12.498|undefined subclass numericVector of class Mnumeric definition not updated|
+ha_get_abstracts|stem|7d56b7eee640a6c3|72e97a570b4cea17|153023cfad735580|285531404||t18798.9800391718s|30c2e6b8d99e4693|370795|rds|vector|||3930.013|undefined subclass numericVector of class Mnumeric definition not updated|
+ha_abstracts_plot|stem|6d0c68f89d986e39|aebe3a47cff21b46|4969db1ca9389314|296568500||t18798.7179502367s|6aac70ce59868a33|131|rds|vector|||8.345||
+ha_abstracts_plot_fn|function|82b5fb71b748f252||||||||||||||
+ha_social_events_stats|stem|0490390aa9a0db16|b78f979c55d33181|7c19bc80b10d7d38|2072439953||t18799.0360821286s|422c235d2021319a|1216448|rds|vector|||4.67|undefined subclass numericVector of class Mnumeric definition not updated|
+word_similarities_plots_fn|function|5082c738dfe97bd9||||||||||||||
+make_topic_model_fn|function|f7484252caac8d35||||||||||||||
+my_script_files|object|01c99a8aaada93eb||||||||||||||
+prepare_the_data_fn|function|d60275be1d1038f0||||||||||||||
+ha_get_abstracts_fn|function|cf38c4d0ba914288||||||||||||||
+kwic_plot_fn|function|bd51a5d144accc7e||||||||||||||
+word_stats_plots_fn|function|4f3b217e837ff0a2||||||||||||||
+social_event_correlation_plots_fn|function|94aaab7b6574f35a||||||||||||||
+ha_saa_compare_plot_fn|function|82b5fb71b748f252||||||||||||||
+ha_social_events_stats_fn|function|ed061fc2bdf1fe73||||||||||||||
+prepare_the_data|stem|b07d4c241474e1f5|f43fa2e0b408f66f|c3ae2a0797513949|-68417729||t18798.2915626721s|a1c456b03adbfbf8|44|rds|vector|||707.226|undefined subclass numericVector of class Mnumeric definition not updated|
+word_stats_plots|stem|7836634291d0e2b2|ca4ded1b376be558|9d6085613e87d054|637005432||t18798.7173722334s|28b66203578981ab|1614|rds|vector|||4.75|undefined subclass numericVector of class Mnumeric definition not updated|
+kwic_plot|stem|cf5f829d0cef71b4|f586fe73153d41aa|8cded2fc17247bb6|871744420||t18798.7136735791s|ac45463db19e2cbe|48|rds|vector|||684.617|remove is deprecated use dfm_remove instead|
+word_similarities_plots|stem|3bf4ac28bfe14e7b|551ecf80e210c355|53021ade583bdbe1|-1749838808||t18798.7177814585s|2caa9f84a7ad3d6c|138|rds|vector|||35.349|undefined subclass numericVector of class Mnumeric definition not updated|
+topic_model_plots|stem|e1931cf08c722e1c|0e3d526b9bd00253|e2d9044559efccee|-1080560788||t18798.6968381856s|6aac70ce59868a33|131|rds|vector|||1179.631|cols is now required when using unnest.Please use cols  cterms|
+social_event_correlation_plots|stem|224cf10221eed60a|ab58973e36ddf703|2a7f09ec1fd66680|778699872||t18798.7178535611s|7e02ad38317bcde4|55|rds|vector|||6.218|arrange_ was deprecated in dplyr 0.7.0.Please use arrange instead.See vignetteprogramming for more help90mThis|
+ha_saa_compare_plot|stem|6d0c68f89d986e39|a575e4f6e872d4e6|e781ce6c5bf73616|148108959||t18799.036208224s|6aac70ce59868a33|131|rds|vector|||10.879||

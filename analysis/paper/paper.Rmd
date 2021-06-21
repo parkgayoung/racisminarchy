@@ -56,23 +56,27 @@ knitr::opts_chunk$set(
 <!-- The actual document text starts here: -->
 
 ```{r 001-word-stats-plots}
-source(here::here('analysis/code/001-word-stats-plots.R'))
+knitr::include_graphics(here::here("analysis/figures/001-keyword-time-series.jpg"))
 ```
 
 ```{r 002-topic-model}
-source(here::here('analysis/code/002-topic-model.R'))
+knitr::include_graphics(here::here("analysis/figures/002-topic-model.jpg"))
 ```
 
 ```{r 003-word-distances}
-source(here::here('analysis/code/003-word-distances-and-similarities.R'))
+knitr::include_graphics(here::here("analysis/figures/003-keyword-similar-words.jpg"))
 ```
 
 ```{r 004-keyword-in-context}
-source(here::here('analysis/code/004-keyword-in-context.R'))
+knitr::include_graphics(here::here("analysis/figures/004-keyword-kwic.jpg"))
 ```
 
 ```{r 005-social-event-correlation}
-source(here::here('analysis/code/005-social-event-correlation.R'))
+knitr::include_graphics(here::here("analysis/figures/005-keyword-and-event-relationships.jpg"))
+```
+
+```{r 007-compare-with-ha}
+knitr::include_graphics(here::here("analysis/figures/006-ha-saa-boxplot.jpg"))
 ```
 
 ### Colophon
