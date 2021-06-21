@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 Title <- "How do archaeologists write about race? Computational text analysis of 41 years of Society of American Archaeology Annual Meeting Abstracts"
 ```
 
-# Computational text analysis of archaeologists' writing about race
+# Computational text analysis of archaeological writing about race
 
 <!-- badges: start -->
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/parkgayoung/racisminarchy/master?urlpath=rstudio) 

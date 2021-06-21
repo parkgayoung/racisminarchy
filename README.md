@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Computational text analysis of archaeologists’ writing about race
+# Computational text analysis of archaeological writing about race
 
 <!-- badges: start -->
 
