@@ -1,3 +1,5 @@
+^renv$
+^renv\.lock$
 ^racisminarchy\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
@@ -7,3 +9,6 @@
 ^CONTRIBUTING\.md$
 analysis
 ^\.github$
+Dockerfile
+_targets
+_targets.R
