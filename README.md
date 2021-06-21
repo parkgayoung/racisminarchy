@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Computational text analysis of archaeologists’ writing about race and inequality
+# Computational text analysis of archaeologists’ writing about race
 
 <!-- badges: start -->
 
@@ -14,23 +14,23 @@ This repository contains the data and code for our paper. Our pre-print
 is online here:
 
 > Park, G., L-Y Wang, B. Marwick, (2020) *How do archaeologists write
-> about race and inequality? Computational text analysis of 41 years of
-> Society of American Archaeology Annual Meeting Abstracts*. , Accessed
-> 20 Jun 2021. Online at <https://doi.org/10.31219/osf.io/zm73f>
+> about race? Computational text analysis of 41 years of Society of
+> American Archaeology Annual Meeting Abstracts*. , Accessed 20 Jun
+> 2021. Online at <https://doi.org/10.31219/osf.io/zm73f>
 
 ### How to cite
 
 Please cite this compendium as:
 
 > Park, G., L-Y Wang, B. Marwick, (2020), (2021). *Compendium of R code
-> and data for How do archaeologists write about race and inequality?
-> Computational text analysis of 41 years of Society of American
-> Archaeology Annual Meeting Abstracts*. Accessed 20 Jun 2021. Online at
+> and data for How do archaeologists write about race? Computational
+> text analysis of 41 years of Society of American Archaeology Annual
+> Meeting Abstracts*. Accessed 20 Jun 2021. Online at
 > <https://doi.org/10.17605/OSF.IO/2N3RF>
 
 ## Contents
 
-The **analysis** directory contains:
+The most important parts of the compendium, for most users, are:
 
 -   [:dart: \_targets.R](_targets.R): workflow instructions and
     information indicating the order that code needs to be run to
