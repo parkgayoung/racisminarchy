@@ -15,7 +15,7 @@ is online here:
 
 > Park, G., L-Y Wang, B. Marwick, (2020) *How do archaeologists write
 > about race? Computational text analysis of 41 years of Society of
-> American Archaeology Annual Meeting Abstracts*. , Accessed 20 Jun
+> American Archaeology Annual Meeting Abstracts*. , Accessed 21 Jun
 > 2021. Online at <https://doi.org/10.31219/osf.io/zm73f>
 
 ### How to cite
@@ -25,7 +25,7 @@ Please cite this compendium as:
 > Park, G., L-Y Wang, B. Marwick, (2020), (2021). *Compendium of R code
 > and data for How do archaeologists write about race? Computational
 > text analysis of 41 years of Society of American Archaeology Annual
-> Meeting Abstracts*. Accessed 20 Jun 2021. Online at
+> Meeting Abstracts*. Accessed 21 Jun 2021. Online at
 > <https://doi.org/10.17605/OSF.IO/2N3RF>
 
 ## Contents
@@ -62,13 +62,14 @@ Docker images to ensure a consistent and reproducible computational
 environment. These Docker images can also be used locally.
 
 You can download the compendium as a zip from from this URL:
-[master.zip](/archive/master.zip). After unzipping: - open the `.Rproj`
-file in RStudio, this will open our project in RStudio on your computer
+[master.zip](/archive/master.zip). After unzipping:  
+- open the `.Rproj` file in RStudio, this will open our project in
+RStudio on your computer  
 - run `renv::restore()` to ensure you have the packages this analysis
-depends on (also listed in the [DESCRIPTION](/DESCRIPTION) file). - run
-`targets::tar_make()` to run our reproducible workflow. This will run
-the R code that produces the figures and numerical results presented in
-the paper, and generate our manuscript by rendering our R Markdown
+depends on (also listed in the [DESCRIPTION](/DESCRIPTION) file).  
+- run `targets::tar_make()` to run our reproducible workflow. This will
+run the R code that produces the figures and numerical results presented
+in the paper, and generate our manuscript by rendering our R Markdown
 document into a Microsoft Word document.
 
 ### Licenses

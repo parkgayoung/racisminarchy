@@ -57,10 +57,10 @@ Docker images to ensure a consistent and reproducible computational
 environment. These Docker images can also be used locally.
 
 You can download the compendium as a zip from from this URL:
-[master.zip](/archive/master.zip). After unzipping:
-- open the `.Rproj` file in RStudio, this will open our project in RStudio on your computer
-- run `renv::restore()` to ensure you have the packages this analysis depends on (also listed in the [DESCRIPTION](/DESCRIPTION) file).
-- run `targets::tar_make()` to run our reproducible workflow. This will run the R code that produces the figures and numerical results presented in the paper, and generate our manuscript by rendering our R Markdown document into a Microsoft Word document. 
+[master.zip](/archive/master.zip). After unzipping:    
+- open the `.Rproj` file in RStudio, this will open our project in RStudio on your computer    
+- run `renv::restore()` to ensure you have the packages this analysis depends on (also listed in the [DESCRIPTION](/DESCRIPTION) file).    
+- run `targets::tar_make()` to run our reproducible workflow. This will run the R code that produces the figures and numerical results presented in the paper, and generate our manuscript by rendering our R Markdown document into a Microsoft Word document.     
 
 ### Licenses
 
