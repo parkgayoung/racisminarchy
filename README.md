@@ -32,8 +32,8 @@ Please cite this compendium as:
 
 The **analysis** directory contains:
 
--   [:file\_document: \_targets.R](_targets.R): workflow instructions
-    and information indicating the order that code needs to be run to
+-   [:dart: \_targets.R](_targets.R): workflow instructions and
+    information indicating the order that code needs to be run to
     generate the results. Run `targets::tar_make()` at the R console to
     start the analysis workflow.
 -   [:file\_folder: analysis/scripts](/analysis/scripts): R script files
