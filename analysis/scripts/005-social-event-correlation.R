@@ -234,7 +234,6 @@ protest_event_all_tbl <-
   event_all_tbl %>%
   filter(str_detect(event_all, "protest"))
 
-
 # events per year
 protest_event_all_tbl_tally <-
   protest_event_all_tbl %>%
