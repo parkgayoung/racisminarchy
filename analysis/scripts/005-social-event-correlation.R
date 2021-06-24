@@ -28,6 +28,11 @@ event_all_tbl <-
 write_csv(event_all_tbl,
           here::here("analysis/data/Timeline_of_African-American_history_social_events.csv"))
 
+#------------------------------------------------------------------
+# or read in our local copy of the Wikipedia table that we made above
+event_all_tbl <-
+  read_csv(here::here("analysis/data/Timeline_of_African-American_history_social_events.csv"))
+
 # events per year
 event_all_tbl_tally <-
 event_all_tbl %>%
@@ -67,6 +72,8 @@ ggplot(event_all_tbl) +
 # plotly::ggplotly(gg)
 
 # compare with words and years in SAA abstracts
+
+
 
 library(tidyverse)
 library(quanteda)
@@ -353,41 +360,43 @@ p_protest <- gg_protest + protest_sp + plot_layout(ncol = 1,
 # https://data.library.virginia.edu/diagnostic-plots/
 # n is protest event
 # value is word count
-saa_and_protest_history_tbl_2yr <-
+saa_and_protest_history_tbl_5yr <-
   saa_and_protest_history_tbl %>%
-  filter(name == "2 year lag")
+  filter(name == "5 year lag")
 
-two_year <- lm(value ~ n, data = saa_and_protest_history_tbl_2yr)
-summary(two_year)
+five_year <- lm(value ~ n, data = saa_and_protest_history_tbl_5yr)
+summary(five_year)
 library(ggfortify)
-autoplot(two_year, label.size = 5)
+autoplot(five_year, label.size = 5)
 
-saa_and_protest_history_tbl_3yr <-
+saa_and_protest_history_tbl_6yr <-
   saa_and_protest_history_tbl %>%
-  filter(name == "3 year lag")
+  filter(name == "6 year lag")
 
-three_year <- lm(value ~ n, data = saa_and_protest_history_tbl_3yr)
-summary(three_year)
+six_year <- lm(value ~ n, data = saa_and_protest_history_tbl_6yr)
+summary(six_year)
 library(ggfortify)
-autoplot(three_year, label.size = 5)
+autoplot(six_year, label.size = 5)
 
-# looks like a significant correlation at the 2 and 3 year lag, get the details
+# looks like a significant correlation at the 5 and 6 year lag, get the details
 
-saa_protest_two_year_aov <-  aov(value ~ n, data = saa_and_protest_history_tbl_2yr)
-saa_protest_two_year_lm <- lm(value ~ n, data = saa_and_protest_history_tbl_2yr)
+# five year lag
+saa_protest_five_year_aov <-  aov(value ~ n, data = saa_and_protest_history_tbl_5yr)
+saa_protest_five_year_lm <- lm(value ~ n, data = saa_and_protest_history_tbl_5yr)
 
-apa::anova_apa(saa_protest_two_year_aov)
-ha_and_history_tbl_2yr_lm_summary <- summary(saa_protest_two_year_lm)
+apa::anova_apa(saa_protest_five_year_aov)
+ha_and_history_tbl_5yr_lm_summary <- summary(saa_protest_five_year_lm)
 
-adjusted_r_squared <- ha_and_history_tbl_2yr_lm_summary$adj.r.squared
+adjusted_r_squared <- ha_and_history_tbl_5yr_lm_summary$adj.r.squared
 
-saa_protest_three_year_aov <-  aov(value ~ n, data = saa_and_protest_history_tbl_3yr)
-saa_protest_three_year_lm <- lm(value ~ n, data = saa_and_protest_history_tbl_3yr)
+# six year lag
+saa_protest_six_year_aov <-  aov(value ~ n, data = saa_and_protest_history_tbl_6yr)
+saa_protest_six_year_lm <- lm(value ~ n, data = saa_and_protest_history_tbl_6yr)
 
-apa::anova_apa(saa_protest_three_year_aov)
-ha_and_history_tbl_3yr_lm_summary <- summary(saa_protest_three_year_lm)
+apa::anova_apa(saa_protest_six_year_aov)
+ha_and_history_tbl_6yr_lm_summary <- summary(saa_protest_six_year_lm)
 
-adjusted_r_squared <- ha_and_history_tbl_3yr_lm_summary$adj.r.squared
+adjusted_r_squared <- ha_and_history_tbl_6yr_lm_summary$adj.r.squared
 
 }
 
