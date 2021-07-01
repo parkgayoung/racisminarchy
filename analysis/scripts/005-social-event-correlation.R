@@ -360,6 +360,8 @@ p_protest <- gg_protest + protest_sp + plot_layout(ncol = 1,
 # https://data.library.virginia.edu/diagnostic-plots/
 # n is protest event
 # value is word count
+
+# 5 year lag
 saa_and_protest_history_tbl_5yr <-
   saa_and_protest_history_tbl %>%
   filter(name == "5 year lag")
@@ -367,8 +369,34 @@ saa_and_protest_history_tbl_5yr <-
 five_year <- lm(value ~ n, data = saa_and_protest_history_tbl_5yr)
 summary(five_year)
 library(ggfortify)
-autoplot(five_year, label.size = 5)
+p_6 <- autoplot(five_year, label.size = 5)
 
+#save the diagnostic plots
+pngfile_6 <- here::here("analysis/figures/005-5-year-lag-diagnostic.png")
+jpgfile_6 <- here::here("analysis/figures/005-5-year-lag-diagnostic.jpg")
+
+library(ragg)
+
+# write PNG file with desired size and resolution
+agg_png(pngfile_6,
+        width = 13,
+        height = 10,
+        units = "cm",
+        res = 1000,
+        scaling = 0.5)
+
+print(p_6)
+
+invisible(dev.off())
+
+# convert PNG to JPG
+library(magick)
+img_in_6 <- image_read(pngfile_6)
+png_6_jpg_6 <- image_convert(img_in_6, "jpg")
+image_write(png_6_jpg_6, jpgfile_6, density = 1000, quality = 100)
+
+
+# 6 year lag
 saa_and_protest_history_tbl_6yr <-
   saa_and_protest_history_tbl %>%
   filter(name == "6 year lag")
@@ -376,7 +404,32 @@ saa_and_protest_history_tbl_6yr <-
 six_year <- lm(value ~ n, data = saa_and_protest_history_tbl_6yr)
 summary(six_year)
 library(ggfortify)
-autoplot(six_year, label.size = 5)
+p_7 <- autoplot(six_year, label.size = 5)
+
+#save the diagnostic plots
+pngfile_7 <- here::here("analysis/figures/005-6-year-lag-diagnostic.png")
+jpgfile_7 <- here::here("analysis/figures/005-6-year-lag-diagnostic.jpg")
+
+library(ragg)
+
+# write PNG file with desired size and resolution
+agg_png(pngfile_7,
+        width = 13,
+        height = 10,
+        units = "cm",
+        res = 1000,
+        scaling = 0.5)
+
+print(p_7)
+
+invisible(dev.off())
+
+# convert PNG to JPG
+library(magick)
+img_in_7 <- image_read(pngfile_7)
+png_7_jpg_7 <- image_convert(img_in_7, "jpg")
+image_write(png_7_jpg_7, jpgfile_7, density = 1000, quality = 100)
+
 
 # looks like a significant correlation at the 5 and 6 year lag, get the details
 
