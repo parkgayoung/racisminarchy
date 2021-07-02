@@ -28,6 +28,11 @@ event_all_tbl <-
 write_csv(event_all_tbl,
           here::here("analysis/data/Timeline_of_African-American_history_social_events.csv"))
 
+#------------------------------------------------------------------
+# or read in our local copy of the Wikipedia table that we made above
+event_all_tbl <-
+  read_csv(here::here("analysis/data/Timeline_of_African-American_history_social_events.csv"))
+
 # events per year
 event_all_tbl_tally <-
 event_all_tbl %>%
@@ -67,6 +72,8 @@ ggplot(event_all_tbl) +
 # plotly::ggplotly(gg)
 
 # compare with words and years in SAA abstracts
+
+
 
 library(tidyverse)
 library(quanteda)
@@ -234,7 +241,6 @@ protest_event_all_tbl <-
   event_all_tbl %>%
   filter(str_detect(event_all, "protest"))
 
-
 # events per year
 protest_event_all_tbl_tally <-
   protest_event_all_tbl %>%
@@ -354,41 +360,96 @@ p_protest <- gg_protest + protest_sp + plot_layout(ncol = 1,
 # https://data.library.virginia.edu/diagnostic-plots/
 # n is protest event
 # value is word count
-saa_and_protest_history_tbl_2yr <-
+
+# 5 year lag
+saa_and_protest_history_tbl_5yr <-
   saa_and_protest_history_tbl %>%
-  filter(name == "2 year lag")
+  filter(name == "5 year lag")
 
-two_year <- lm(value ~ n, data = saa_and_protest_history_tbl_2yr)
-summary(two_year)
+five_year <- lm(value ~ n, data = saa_and_protest_history_tbl_5yr)
+summary(five_year)
 library(ggfortify)
-autoplot(two_year, label.size = 5)
+p_6 <- autoplot(five_year, label.size = 5)
 
-saa_and_protest_history_tbl_3yr <-
+#save the diagnostic plots
+pngfile_6 <- here::here("analysis/figures/005-5-year-lag-diagnostic.png")
+jpgfile_6 <- here::here("analysis/figures/005-5-year-lag-diagnostic.jpg")
+
+library(ragg)
+
+# write PNG file with desired size and resolution
+agg_png(pngfile_6,
+        width = 13,
+        height = 10,
+        units = "cm",
+        res = 1000,
+        scaling = 0.5)
+
+print(p_6)
+
+invisible(dev.off())
+
+# convert PNG to JPG
+library(magick)
+img_in_6 <- image_read(pngfile_6)
+png_6_jpg_6 <- image_convert(img_in_6, "jpg")
+image_write(png_6_jpg_6, jpgfile_6, density = 1000, quality = 100)
+
+
+# 6 year lag
+saa_and_protest_history_tbl_6yr <-
   saa_and_protest_history_tbl %>%
-  filter(name == "3 year lag")
+  filter(name == "6 year lag")
 
-three_year <- lm(value ~ n, data = saa_and_protest_history_tbl_3yr)
-summary(three_year)
+six_year <- lm(value ~ n, data = saa_and_protest_history_tbl_6yr)
+summary(six_year)
 library(ggfortify)
-autoplot(three_year, label.size = 5)
+p_7 <- autoplot(six_year, label.size = 5)
 
-# looks like a significant correlation at the 2 and 3 year lag, get the details
+#save the diagnostic plots
+pngfile_7 <- here::here("analysis/figures/005-6-year-lag-diagnostic.png")
+jpgfile_7 <- here::here("analysis/figures/005-6-year-lag-diagnostic.jpg")
 
-saa_protest_two_year_aov <-  aov(value ~ n, data = saa_and_protest_history_tbl_2yr)
-saa_protest_two_year_lm <- lm(value ~ n, data = saa_and_protest_history_tbl_2yr)
+library(ragg)
 
-apa::anova_apa(saa_protest_two_year_aov)
-ha_and_history_tbl_2yr_lm_summary <- summary(saa_protest_two_year_lm)
+# write PNG file with desired size and resolution
+agg_png(pngfile_7,
+        width = 13,
+        height = 10,
+        units = "cm",
+        res = 1000,
+        scaling = 0.5)
 
-adjusted_r_squared <- ha_and_history_tbl_2yr_lm_summary$adj.r.squared
+print(p_7)
 
-saa_protest_three_year_aov <-  aov(value ~ n, data = saa_and_protest_history_tbl_3yr)
-saa_protest_three_year_lm <- lm(value ~ n, data = saa_and_protest_history_tbl_3yr)
+invisible(dev.off())
 
-apa::anova_apa(saa_protest_three_year_aov)
-ha_and_history_tbl_3yr_lm_summary <- summary(saa_protest_three_year_lm)
+# convert PNG to JPG
+library(magick)
+img_in_7 <- image_read(pngfile_7)
+png_7_jpg_7 <- image_convert(img_in_7, "jpg")
+image_write(png_7_jpg_7, jpgfile_7, density = 1000, quality = 100)
 
-adjusted_r_squared <- ha_and_history_tbl_3yr_lm_summary$adj.r.squared
+
+# looks like a significant correlation at the 5 and 6 year lag, get the details
+
+# five year lag
+saa_protest_five_year_aov <-  aov(value ~ n, data = saa_and_protest_history_tbl_5yr)
+saa_protest_five_year_lm <- lm(value ~ n, data = saa_and_protest_history_tbl_5yr)
+
+apa::anova_apa(saa_protest_five_year_aov)
+ha_and_history_tbl_5yr_lm_summary <- summary(saa_protest_five_year_lm)
+
+adjusted_r_squared <- ha_and_history_tbl_5yr_lm_summary$adj.r.squared
+
+# six year lag
+saa_protest_six_year_aov <-  aov(value ~ n, data = saa_and_protest_history_tbl_6yr)
+saa_protest_six_year_lm <- lm(value ~ n, data = saa_and_protest_history_tbl_6yr)
+
+apa::anova_apa(saa_protest_six_year_aov)
+ha_and_history_tbl_6yr_lm_summary <- summary(saa_protest_six_year_lm)
+
+adjusted_r_squared <- ha_and_history_tbl_6yr_lm_summary$adj.r.squared
 
 }
 
