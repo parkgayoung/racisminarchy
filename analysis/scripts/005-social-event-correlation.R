@@ -371,6 +371,7 @@ summary(five_year)
 library(ggfortify)
 p_6 <- autoplot(five_year, label.size = 5)
 
+
 #save the diagnostic plots
 pngfile_6 <- here::here("analysis/figures/005-5-year-lag-diagnostic.png")
 jpgfile_6 <- here::here("analysis/figures/005-5-year-lag-diagnostic.jpg")
@@ -406,11 +407,11 @@ summary(six_year)
 library(ggfortify)
 p_7 <- autoplot(six_year, label.size = 5)
 
+
 #save the diagnostic plots
 pngfile_7 <- here::here("analysis/figures/005-6-year-lag-diagnostic.png")
 jpgfile_7 <- here::here("analysis/figures/005-6-year-lag-diagnostic.jpg")
 
-library(ragg)
 
 # write PNG file with desired size and resolution
 agg_png(pngfile_7,
@@ -429,6 +430,12 @@ library(magick)
 img_in_7 <- image_read(pngfile_7)
 png_7_jpg_7 <- image_convert(img_in_7, "jpg")
 image_write(png_7_jpg_7, jpgfile_7, density = 1000, quality = 100)
+
+# try new pkg for check the lags
+library(performance)
+# performance pkg requires pkg 'see' and 'qqlotr'
+check_model(five_year)
+check_model(six_year)
 
 
 # looks like a significant correlation at the 5 and 6 year lag, get the details
