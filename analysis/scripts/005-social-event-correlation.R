@@ -371,10 +371,8 @@ five_year <- lm(value ~ n, data = saa_and_protest_history_tbl_5yr)
 
 summary(five_year)
 
-library(performance)
-# performance pkg requires pkg 'see' and 'qqlotr'
-
-p_6 <- check_model(five_year, dot_size =2)
+library(ggfortify)
+p_6 <- autoplot(five_year, label.size = 5)
 
 
 #save the diagnostic plots
@@ -385,8 +383,8 @@ library(ragg)
 
 # write PNG file with desired size and resolution
 agg_png(pngfile_6,
-        width = 10,
-        height = 12,
+        width = 13,
+        height = 10,
         units = "cm",
         res = 1000,
         scaling = 0.5)
@@ -410,7 +408,7 @@ saa_and_protest_history_tbl_6yr <-
 six_year <- lm(value ~ n, data = saa_and_protest_history_tbl_6yr)
 summary(six_year)
 
-p_7 <- check_model(six_year, dot_size =2)
+p_7 <- autoplot(six_year, label.size = 5)
 
 
 #save the diagnostic plots
@@ -420,8 +418,8 @@ jpgfile_7 <- here::here("analysis/figures/005-6-year-lag-diagnostic.jpg")
 
 # write PNG file with desired size and resolution
 agg_png(pngfile_7,
-        width = 10,
-        height = 12,
+        width = 13,
+        height = 10,
         units = "cm",
         res = 1000,
         scaling = 0.5)
@@ -431,7 +429,6 @@ print(p_7)
 invisible(dev.off())
 
 # convert PNG to JPG
-library(magick)
 img_in_7 <- image_read(pngfile_7)
 png_7_jpg_7 <- image_convert(img_in_7, "jpg")
 image_write(png_7_jpg_7, jpgfile_7, density = 1000, quality = 100)
