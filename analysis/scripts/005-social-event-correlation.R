@@ -366,7 +366,9 @@ saa_and_protest_history_tbl_5yr <-
   saa_and_protest_history_tbl %>%
   filter(name == "5 year lag")
 
+row.names(saa_and_protest_history_tbl_5yr) <- saa_and_protest_history_tbl_5yr$year
 five_year <- lm(value ~ n, data = saa_and_protest_history_tbl_5yr)
+
 summary(five_year)
 library(ggfortify)
 p_6 <- autoplot(five_year, label.size = 5)
