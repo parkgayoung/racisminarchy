@@ -7,5 +7,5 @@ USER ${NB_USER}
 
 
 
-RUN wget https://github.com/parkgayoung/bulletinracisminarchy/raw/master/DESCRIPTION && R --vanilla -s -e 'renv::restore()'
+RUN wget https://github.com/parkgayoung/bulletinracisminarchy/raw/master/DESCRIPTION && R --vanilla -s -e "install.packages('renv'); renv::restore()"
 RUN rm DESCRIPTION.1; exit 0
