@@ -7,6 +7,5 @@ USER ${NB_USER}
 
 
 
-RUN wget https://github.com/parkgayoung/bulletinracisminarchy/raw/master/DESCRIPTION && R  -e  "install.packages('renv');  renv::restore(repos = c(CRAN='https://packagemanager.rstudio.com'))"
-
+RUN wget https://github.com/parkgayoung/bulletinracisminarchy/raw/master/DESCRIPTION && R --vanilla -s -e 'renv::restore()'
 RUN rm DESCRIPTION.1; exit 0
