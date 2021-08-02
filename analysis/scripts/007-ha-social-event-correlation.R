@@ -102,9 +102,10 @@ ha_and_history_tbl <-
     `5 year lag` = lag(ha_wordcount, 5),
     `6 year lag` = lag(ha_wordcount, 6)
   ) %>%
-  select(-ha_wordcount,
+  dplyr::select(-ha_wordcount,
          -`Same year`)  %>%
   pivot_longer(-c(year, n)) %>%
+  replace_na(list(value = 0)) %>%
   mutate(name = factor(name,
                        levels = c(
                          "1 year lag",
@@ -128,7 +129,7 @@ n_events_subset <-
 # how many events per plot?
 ha_and_history_tbl_per_lag_plot <-
   ha_and_history_tbl %>%
-  filter(!is.na(value)) %>%
+  filter(value != 0) %>%
   group_by(name) %>%
   summarise(n_events = sum(n, na.rm = TRUE),
             n_words = sum(value, na.rm = TRUE))
@@ -138,6 +139,53 @@ ha_and_history_tbl <-
   left_join(ha_and_history_tbl_per_lag_plot) %>%
   mutate(facet_label = paste0(name, "\n(", n_events, " events, ", n_words, " words)"))
 
+# use best fitting model and compute linear models
+library(MASS)
+ha_fit_out <-
+  ha_and_history_tbl %>%
+  nest(-name) %>%
+  mutate(i_model = map(data, ~(glm.nb(value ~ n,
+                                      data = .x)))) %>%
+  mutate(i_summary = map(i_model, ~summary(.x))) %>%
+  mutate(coefs = map(i_summary, ~bind_rows(coef(.x)["n", c("Estimate",
+                                                           "Std. Error",
+                                                           "Pr(>|z|)")]))) %>%
+  unnest(coefs) %>%
+  mutate(name_and_p = paste0(name, "\n(p = ", round(`Pr(>|z|)`, 3), ")" ))
+
+# compute confidence intervals on the estimates
+ha_fit_out_confint <-
+  ha_fit_out %>%
+  nest(-c(, name, i_model)) %>%
+  mutate(confints = map(i_model,  ~confint(.x) %>% as_tibble %>% slice(2) )) %>%
+  unnest(confints)
+
+# combine models and confints
+ha_fit_out_model_and_confint <-
+  ha_fit_out_confint %>%
+  dplyr::select(name, `2.5 %`, `97.5 %`) %>%
+  left_join(ha_fit_out)
+
+# get pseudo-r-squared
+library(rsq)
+ha_fit_out_model_and_confint <-
+  ha_fit_out_model_and_confint %>%
+  mutate(rsqs = map_dbl(i_model, rsq))
+
+# plot coefficients of models, none include zero
+coef_plot <-
+  ggplot(ha_fit_out_model_and_confint) +
+  aes(y =Estimate,
+      x = fct_rev(name_and_p)) +
+  geom_pointrange(aes(ymin = `2.5 %`,
+                      ymax = `97.5 %`)) +
+  scale_y_continuous(
+    name = "Estimate and 95% CI") +
+  geom_hline(yintercept = 0,
+             colour = "red") +
+  xlab("") +
+  coord_flip() +
+  theme_bw(base_size = 8)
 
 # scatter plot
 library(ggpubr)
@@ -150,33 +198,18 @@ sp <-
   geom_point(alpha = 0.3) +
   geom_text_repel(aes(label = year),
                   size = 4) +
-  geom_smooth(se = FALSE,
-              method = "lm") +
-  stat_cor(label.y = 10,
-           label.x = 4.3,
-           size = 3) +
-  stat_regline_equation(label.y = 11,
-                        label.x = 4.3,
-                        size = 3) +
+  geom_smooth(method = 'glm.nb') +
+  geom_text(data = tibble( facet_label = unique(ha_and_history_tbl$facet_label),
+                           n = 5,
+                           value = 30,
+                           label = paste0("pseudo-R-squared =\n", round(ha_fit_out_model_and_confint$rsqs, 3))),
+            aes(label = label),
+            size = 3) +
   theme_bw(base_size = 12) +
   labs(x = paste0("African-American historical event annual frequency"),
        y = paste0("Mentions of 'race', etc. (total of ", n_words, ")\nin HA abstracts (n = ", n_abstracts, ")")) +
   facet_wrap( ~ facet_label) +
   scale_y_continuous(breaks = scales::pretty_breaks())
-
-# looks like a significant correlation at the 3 year lag, get the details
-# to include into the text
-ha_and_history_tbl_3yr <-
-ha_and_history_tbl %>%
-  filter(name == "3 year lag")
-
-ha_and_history_tbl_3yr_aov <- aov(value ~ n, data = ha_and_history_tbl_3yr)
-ha_and_history_tbl_3yr_lm <- lm(value ~ n, data = ha_and_history_tbl_3yr)
-
-apa::anova_apa(ha_and_history_tbl_3yr_aov)
-ha_and_history_tbl_3yr_lm_summary <- summary(ha_and_history_tbl_3yr_lm)
-
-adjusted_r_squared <- ha_and_history_tbl_3yr_lm_summary$adj.r.squared
 
 # --------------------------------------------------------------
 # what about looking only at protest events that might stimulate
@@ -235,9 +268,10 @@ ha_and_protest_history_tbl <-
     `5 year lag` = lag(ha_wordcount, 5),
     `6 year lag` = lag(ha_wordcount, 6)
   ) %>%
-  select(-ha_wordcount,
+  dplyr::select(-ha_wordcount,
          -`Same year`)  %>%
   pivot_longer(-c(year, n)) %>%
+  replace_na(list(value = 0)) %>%
   mutate(name = factor(name,
                        levels = c(
                          "1 year lag",
@@ -271,6 +305,53 @@ ha_and_protest_history_tbl <-
   left_join(ha_and_protest_history_tbl_per_lag_plot) %>%
   mutate(facet_label = paste0(name, "\n(", n_events, " events, ", n_words, " words)"))
 
+# inspect models for protest data
+ha_p_model_out <-
+  ha_and_protest_history_tbl %>%
+  nest(-name) %>%
+  mutate(zi_model = map(data, ~(glm.nb(value ~ n,
+                                       data = .x)))) %>%
+  mutate(zi_summary = map(zi_model, ~summary(.x))) %>%
+  mutate(coefs = map(zi_summary, ~bind_rows(coef(.x)["n", c("Estimate",
+                                                            "Std. Error",
+                                                            "Pr(>|z|)")]))) %>%
+  unnest(coefs) %>%
+  mutate(name_and_p = paste0(name, "\n(p = ", round(`Pr(>|z|)`, 3), ")" ))
+
+# compute confidence intervals on the estimates
+ha_p_model_out_confint <-
+ ha_p_model_out %>%
+  nest(-c(, name, zi_model)) %>%
+  mutate(confints = map(zi_model,  ~confint(.x) %>% as_tibble %>% slice(2) )) %>%
+  unnest(confints)
+
+# combine models and confints
+ha_p_model_out_model_and_confint <-
+  ha_p_model_out_confint %>%
+  dplyr::select(name, `2.5 %`, `97.5 %`) %>%
+  left_join(ha_p_model_out)
+
+# get pseudo-r-squared
+library(rsq)
+ha_p_model_out_model_and_confint_rsq <-
+ ha_p_model_out_model_and_confint %>%
+  mutate(rsqs = map_dbl(zi_model, rsq))
+
+# plot coefficients of models, none include zero
+coef_plot <-
+  ggplot(ha_p_model_out_model_and_confint) +
+  aes(y =Estimate,
+      x = fct_rev(name_and_p)) +
+  geom_pointrange(aes(ymin = `2.5 %`,
+                      ymax = `97.5 %`)) +
+  scale_y_continuous(
+    name = "Estimate and 95% CI") +
+  geom_hline(yintercept = 0,
+             colour = "red") +
+  xlab("") +
+  coord_flip( ylim = c(-3, 3)) +
+  theme_bw(base_size = 8)
+
 # protest events scatter plot
 library(ggpubr)
 library(ggrepel)
@@ -282,14 +363,13 @@ protest_sp <-
   geom_point(alpha = 0.3) +
   geom_text_repel(aes(label = year),
                   size = 4) +
-  geom_smooth(se = FALSE,
-              method = "lm") +
-  stat_cor(label.y = 11,
-           label.x = 1,
-           size = 3) +
-  stat_regline_equation(label.y = 12,
-                        label.x = 1,
-                        size = 3) +
+  geom_smooth(method = 'glm.nb') +
+  geom_text(data = tibble( facet_label = unique(ha_and_protest_history_tbl$facet_label),
+                           n = 1,
+                           value = 100,
+                           label = paste0("pseudo-R-squared =\n", round(ha_p_model_out_model_and_confint_rsq$rsqs, 3))),
+            aes(label = label),
+            size = 3) +
   theme_bw(base_size = 12) +
   labs(x = paste0("African-American historical event annual frequency (protests only)"),
        y = paste0("Mentions of 'race', etc. (total of ", n_words, ")\nin HA abstracts (n = ", n_abstracts, ")")) +
@@ -297,9 +377,45 @@ protest_sp <-
   scale_y_continuous(breaks = scales::pretty_breaks())
 
 # put both plots together
-library(patchwork)
-p_protest <- gg_protest + protest_sp + plot_layout(ncol = 1,
-                                                   heights = c(0.3, 1))
+# put all plots together
+library(cowplot)
+p_ha <-
+  plot_grid(
+    plot_grid(gg_protest,
+              coef_plot,
+              rel_widths = c(1, 0.6)),
+    protest_sp,
+    axis = "lr",
+    rel_heights = c(1,2),
+    ncol = 1
+  )
+
+# write PNG file with desired size and resolution
+agg_png(here::here("analysis/figures/005-model-diagnostic-ha-1.png"),
+        width = 13,
+        height = 10,
+        units = "cm",
+        res = 1000,
+        scaling = 0.5)
+
+# HA 2 year lag with protest events
+print(autoplot(ha_p_model_out_model_and_confint_rsq$i_model[[2]]))
+
+invisible(dev.off())
+
+# write PNG file with desired size and resolution
+agg_png(here::here("analysis/figures/005-model-diagnostic-ha-2.png"),
+        width = 13,
+        height = 10,
+        units = "cm",
+        res = 1000,
+        scaling = 0.5)
+
+# SAA 3 year lag with protest events
+print(autoplot(ha_p_model_out_model_and_confint_rsq$i_model[[3]]))
+
+invisible(dev.off())
+
 
 }
 

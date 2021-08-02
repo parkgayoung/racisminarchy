@@ -245,7 +245,7 @@ best_fit_out_confint <-
 best_fit_out_model_and_confint <-
   best_fit_out_confint %>%
   dplyr::select(name, `2.5 %`, `97.5 %`) %>%
-  left_join(zeroinfl_out)
+  left_join(best_fit_out)
 
 # get pseudo-r-squared
 library(rsq)
@@ -268,7 +268,7 @@ ggplot(best_fit_out_model_and_confint) +
   coord_flip() +
   theme_bw(base_size = 8)
 
-# plot linear models with poisson
+# plot linear models
 sp <-
 ggplot(saa_and_history_tbl) +
   aes(n,
@@ -418,28 +418,6 @@ saa_and_protest_history_tbl <-
   left_join(saa_and_protest_history_tbl_per_lag_plot) %>%
   mutate(facet_label = paste0(name, "\n(", n_events, " events, ", n_words, " words)"))
 
-# protest events scatter plot
-library(ggpubr)
-library(ggrepel)
-
-protest_sp <-
-  ggplot(saa_and_protest_history_tbl) +
-  aes(n,
-      value) +
-  geom_point(alpha = 0.3) +
-  geom_text_repel(aes(label = year),
-                  size = 4) +
-  geom_smooth(method = 'glm.nb') +
-  theme_bw(base_size = 12) +
-  labs(x = paste0("African-American historical event annual frequency (protests only)"),
-       y = paste0("Mentions of 'race', etc. (total of ", n_words, ")\nin SAA abstracts")) +
-  facet_wrap( ~ facet_label, scales = "free_x")
-
-# put both plots together
-library(patchwork)
-p_protest <- gg_protest + protest_sp + plot_layout(ncol = 1,
-                             heights = c(0.3, 1))
-
 # inspect models for protest data
 p_model_out <-
   saa_and_protest_history_tbl %>%
@@ -466,6 +444,12 @@ p_model_out_model_and_confint <-
   dplyr::select(name, `2.5 %`, `97.5 %`) %>%
   left_join(p_model_out)
 
+# get pseudo-r-squared
+library(rsq)
+p_model_out_model_and_confint_rsq <-
+  p_model_out_model_and_confint %>%
+  mutate(rsqs = map_dbl(zi_model, rsq))
+
 # plot coefficients of models, none include zero
 coef_plot <-
   ggplot(p_model_out_model_and_confint) +
@@ -480,6 +464,74 @@ coef_plot <-
   xlab("") +
   coord_flip( ylim = c(-3, 3)) +
   theme_bw(base_size = 8)
+
+# protest events scatter plot
+library(ggpubr)
+library(ggrepel)
+
+protest_sp <-
+  ggplot(saa_and_protest_history_tbl) +
+  aes(n,
+      value) +
+  geom_point(alpha = 0.3) +
+  geom_text_repel(aes(label = year),
+                  size = 4) +
+  geom_smooth(method = 'glm.nb') +
+  geom_text(data = tibble( facet_label = unique(saa_and_protest_history_tbl$facet_label),
+                           n = 2,
+                           value = 100,
+                           label = paste0("pseudo-R-squared =\n", round(p_model_out_model_and_confint_rsq$rsqs, 3))),
+            aes(label = label),
+            size = 3) +
+  theme_bw(base_size = 12) +
+  labs(x = paste0("African-American historical event annual frequency (protests only)"),
+       y = paste0("Mentions of 'race', etc. (total of ", n_words, ")\nin SAA abstracts")) +
+  facet_wrap( ~ facet_label, scales = "free_x")
+
+
+# put all plots together
+library(cowplot)
+p_6 <-
+  plot_grid(
+    plot_grid(gg_protest,
+              coef_plot,
+              rel_widths = c(1, 0.6)),
+    protest_sp,
+    axis = "lr",
+    rel_heights = c(1,2),
+    ncol = 1
+  )
+
+# ------------------------------------------------------
+# plot diagnostics for model with significant relationship
+
+library(ggfortify)
+
+# write PNG file with desired size and resolution
+agg_png(here::here("analysis/figures/005-model-diagnostic-1.png"),
+        width = 13,
+        height = 10,
+        units = "cm",
+        res = 1000,
+        scaling = 0.5)
+
+# SAA 1 year lag with all social events
+print(autoplot(best_fit_out_model_and_confint$i_model[[1]]))
+invisible(dev.off())
+
+# write PNG file with desired size and resolution
+agg_png(here::here("analysis/figures/005-model-diagnostic-2.png"),
+        width = 13,
+        height = 10,
+        units = "cm",
+        res = 1000,
+        scaling = 0.5)
+
+# SAA 5 year lag with protest events
+print(autoplot(p_model_out_model_and_confint_rsq$zi_model[[5]]))
+invisible(dev.off())
+
+
 
 
 
