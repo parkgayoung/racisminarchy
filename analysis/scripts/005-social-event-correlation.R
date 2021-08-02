@@ -73,8 +73,6 @@ ggplot(event_all_tbl) +
 
 # compare with words and years in SAA abstracts
 
-
-
 library(tidyverse)
 library(quanteda)
 
@@ -112,7 +110,7 @@ saa_words_per_year <-
          saa_wordcount = rowSums(dfm_keywords))
 
 n_words <- sum(saa_words_per_year$saa_wordcount, na.rm = TRUE )
-n_abstracts <- length(rowSums(dfm_keywords))
+n_years <- length(rowSums(dfm_keywords))
 
 # visualise
 gg1 <-
@@ -145,6 +143,7 @@ saa_and_history_tbl <-
   select(-saa_wordcount,
          -`Same year`)  %>%
   pivot_longer(-c(year, n)) %>%
+  replace_na(list(value = 0)) %>%
   mutate(name = factor(name,
                        levels = c(
                                   "1 year lag",
@@ -153,6 +152,9 @@ saa_and_history_tbl <-
                                   "4 year lag",
                                   "5 year lag",
                                   "6 year lag")))
+
+## --------------------------------------------------
+
 
 # African-American events on the scatterplot
 # which are events that also happened in a year or
@@ -168,46 +170,137 @@ event_all_tbl_tally %>%
 # how many events per plot?
 saa_and_history_tbl_per_lag_plot <-
 saa_and_history_tbl %>%
-  filter(!is.na(value)) %>%
+  filter(value != 0) %>%
   group_by(name) %>%
-  summarise(n_events = sum(n, na.rm = TRUE),
-            n_words = sum(value, na.rm = TRUE))
+  summarise(n_events_ = sum(n, na.rm = TRUE),
+            n_words_ = sum(value, na.rm = TRUE))
 
 saa_and_history_tbl <-
   saa_and_history_tbl %>%
   left_join(saa_and_history_tbl_per_lag_plot) %>%
-  mutate(facet_label = paste0(name, "\n(", n_events, " events, ", n_words, " words)"))
-
+  mutate(facet_label = paste0(name, "\n(", n_events_, " events, ", n_words_, " words)"))
 
 # scatter plot
 library(ggpubr)
 library(ggrepel)
 
+library(broom)
+require(ggplot2)
+require(pscl)
+
+# is it zero-inflated?
+saa_and_history_tbl %>%
+  filter(name == "1 year lag") %>%
+  ggplot() +
+  aes(value) +
+  geom_histogram()
+
+# devtools::install_github("r-forge/countreg/pkg")
+library(MASS)
+
+# here I explored several different models (lowest BIC is best)
+# glm( family = "poisson" )    min BIC 247.27 no
+# glm.nb                       min BIC 173.93 ok - use this one
+# zeroinfl( dist = "poisson" ) min BIC 198.24 no
+# zeroinfl( dist = "negbin" )  min BIC 177.64 ok
+
+# compute models
+model_out <-
+  saa_and_history_tbl %>%
+  nest(-name) %>%
+  mutate(the_model = map(data, ~(glm.nb(value ~ n,
+                                     data = .x))))
+
+# inspect fit
+par(mfrow = c(2,3))
+map(model_out$the_model,  countreg::rootogram)
+dev.off()
+
+# check BIC values to compare models
+map(model_out$the_model,  vcdExtra::LRstats) %>%
+  bind_rows() %>%
+  arrange((BIC))
+
+# use best fitting model and compute linear models
+best_fit_out <-
+  saa_and_history_tbl %>%
+  nest(-name) %>%
+  mutate(i_model = map(data, ~(glm.nb(value ~ n,
+                                  data = .x)))) %>%
+  mutate(i_summary = map(i_model, ~summary(.x))) %>%
+  mutate(coefs = map(i_summary, ~bind_rows(coef(.x)["n", c("Estimate",
+                                                                 "Std. Error",
+                                                                 "Pr(>|z|)")]))) %>%
+  unnest(coefs) %>%
+  mutate(name_and_p = paste0(name, "\n(p = ", round(`Pr(>|z|)`, 3), ")" ))
+
+# compute confidence intervals on the estimates
+best_fit_out_confint <-
+  best_fit_out %>%
+  nest(-c(, name, i_model)) %>%
+  mutate(confints = map(i_model,  ~confint(.x) %>% as_tibble %>% slice(2) )) %>%
+  unnest(confints)
+
+# combine models and confints
+best_fit_out_model_and_confint <-
+  best_fit_out_confint %>%
+  dplyr::select(name, `2.5 %`, `97.5 %`) %>%
+  left_join(zeroinfl_out)
+
+# get pseudo-r-squared
+library(rsq)
+best_fit_out_model_and_confint <-
+best_fit_out_model_and_confint %>%
+  mutate(rsqs = map_dbl(i_model, rsq))
+
+# plot coefficients of models, none include zero
+coef_plot <-
+ggplot(best_fit_out_model_and_confint) +
+  aes(y =Estimate,
+      x = fct_rev(name_and_p)) +
+  geom_pointrange(aes(ymin = `2.5 %`,
+                      ymax = `97.5 %`)) +
+  scale_y_continuous(
+                     name = "Estimate and 95% CI") +
+  geom_hline(yintercept = 0,
+             colour = "red") +
+  xlab("") +
+  coord_flip() +
+  theme_bw(base_size = 8)
+
+# plot linear models with poisson
 sp <-
 ggplot(saa_and_history_tbl) +
   aes(n,
       value) +
   geom_point(alpha = 0.3) +
+  facet_wrap( ~ facet_label) +
+  geom_text(data = tibble( facet_label = unique(saa_and_history_tbl$facet_label),
+                           n = 14,
+                           value = 30,
+                           label = paste0("pseudo-R-squared =\n", round(best_fit_out_model_and_confint$rsqs, 3))),
+            aes(label = label),
+            size = 3) +
   geom_text_repel(aes(label = year),
             size = 4) +
-  geom_smooth(se = FALSE,
-              method = "lm") +
-  stat_cor(label.y = 70,
-           label.x = 8,
-           size = 3) +
-  stat_regline_equation(label.y = 65,
-                        label.x = 8,
-                        size = 3) +
+  geom_smooth(method = 'glm.nb') +
   theme_bw(base_size = 12) +
   labs(x = paste0("African-American historical event annual frequency"),
-       y = paste0("Mentions of 'race', etc. (total of ", n_words, ")\nin SAA abstracts (n = ", n_abstracts, ")")) +
-  facet_wrap( ~ facet_label) +
+       y = paste0("Mentions of 'race', etc. (total of ", n_words, ")\nin SAA abstracts")) +
   scale_y_continuous(breaks = scales::pretty_breaks())
 
-# put both plots together
-library(patchwork)
-p_5 <- gg + sp + plot_layout(ncol = 1,
-                      heights = c(0.3, 1))
+# put all plots together
+library(cowplot)
+p_5 <-
+plot_grid(
+  plot_grid(gg,
+            coef_plot,
+            rel_widths = c(1, 0.6)),
+  sp,
+  axis = "lr",
+  rel_heights = c(1,2),
+  ncol = 1
+          )
 
 pngfile_5 <- here::here("analysis/figures/005-keyword-and-event-relationships.png")
 jpgfile_5 <- here::here("analysis/figures/005-keyword-and-event-relationships.jpg")
@@ -231,7 +324,6 @@ library(magick)
 img_in_5 <- image_read(pngfile_5)
 png_5_jpg_5 <- image_convert(img_in_5, "jpg")
 image_write(png_5_jpg_5, jpgfile_5, density = 1000, quality = 100)
-
 
 # --------------------------------------------------------------
 # what about looking only at protest events that might stimulate
@@ -290,7 +382,7 @@ saa_and_protest_history_tbl <-
     `5 year lag` = lag(saa_wordcount, 5),
     `6 year lag` = lag(saa_wordcount, 6)
   ) %>%
-  select(-saa_wordcount,
+  dplyr::select(-saa_wordcount,
          -`Same year`)  %>%
   pivot_longer(-c(year, n)) %>%
   mutate(name = factor(name,
@@ -337,17 +429,10 @@ protest_sp <-
   geom_point(alpha = 0.3) +
   geom_text_repel(aes(label = year),
                   size = 4) +
-  geom_smooth(se = FALSE,
-              method = "lm") +
-  stat_cor(label.y = 16,
-           label.x = 0.5,
-           size = 3) +
-  stat_regline_equation(label.y = 15,
-                        label.x = 0.5,
-                        size = 3) +
+  geom_smooth(method = 'glm.nb') +
   theme_bw(base_size = 12) +
   labs(x = paste0("African-American historical event annual frequency (protests only)"),
-       y = paste0("Mentions of 'race', etc. (total of ", n_words, ")\nin SAA abstracts (n = ", n_abstracts, ")")) +
+       y = paste0("Mentions of 'race', etc. (total of ", n_words, ")\nin SAA abstracts")) +
   facet_wrap( ~ facet_label, scales = "free_x")
 
 # put both plots together
@@ -355,104 +440,48 @@ library(patchwork)
 p_protest <- gg_protest + protest_sp + plot_layout(ncol = 1,
                              heights = c(0.3, 1))
 
-# inspect some diagnostics of the significant plots
-# guide to interpretation:
-# https://data.library.virginia.edu/diagnostic-plots/
-# n is protest event
-# value is word count
-
-# 5 year lag
-saa_and_protest_history_tbl_5yr <-
+# inspect models for protest data
+p_model_out <-
   saa_and_protest_history_tbl %>%
-  filter(name == "5 year lag")
+  nest(-name) %>%
+  mutate(zi_model = map(data, ~(glm.nb(value ~ n,
+                                         data = .x)))) %>%
+  mutate(zi_summary = map(zi_model, ~summary(.x))) %>%
+  mutate(coefs = map(zi_summary, ~bind_rows(coef(.x)["n", c("Estimate",
+                                                                 "Std. Error",
+                                                                 "Pr(>|z|)")]))) %>%
+  unnest(coefs) %>%
+  mutate(name_and_p = paste0(name, "\n(p = ", round(`Pr(>|z|)`, 3), ")" ))
 
-row.names(saa_and_protest_history_tbl_5yr) <- saa_and_protest_history_tbl_5yr$year
-five_year <- lm(value ~ n, data = saa_and_protest_history_tbl_5yr)
+# compute confidence intervals on the estimates
+p_model_out_confint <-
+  p_model_out %>%
+  nest(-c(, name, zi_model)) %>%
+  mutate(confints = map(zi_model,  ~confint(.x) %>% as_tibble %>% slice(2) )) %>%
+  unnest(confints)
 
-summary(five_year)
+# combine models and confints
+p_model_out_model_and_confint <-
+  p_model_out_confint %>%
+  dplyr::select(name, `2.5 %`, `97.5 %`) %>%
+  left_join(p_model_out)
 
-library(ggfortify)
-p_6 <- autoplot(five_year, label.size = 5)
-
-
-#save the diagnostic plots
-pngfile_6 <- here::here("analysis/figures/005-5-year-lag-diagnostic.png")
-jpgfile_6 <- here::here("analysis/figures/005-5-year-lag-diagnostic.jpg")
-
-library(ragg)
-
-# write PNG file with desired size and resolution
-agg_png(pngfile_6,
-        width = 13,
-        height = 10,
-        units = "cm",
-        res = 1000,
-        scaling = 0.5)
-
-print(p_6)
-
-invisible(dev.off())
-
-# convert PNG to JPG
-library(magick)
-img_in_6 <- image_read(pngfile_6)
-png_6_jpg_6 <- image_convert(img_in_6, "jpg")
-image_write(png_6_jpg_6, jpgfile_6, density = 1000, quality = 100)
-
-
-# 6 year lag
-saa_and_protest_history_tbl_6yr <-
-  saa_and_protest_history_tbl %>%
-  filter(name == "6 year lag")
-
-six_year <- lm(value ~ n, data = saa_and_protest_history_tbl_6yr)
-summary(six_year)
-
-p_7 <- autoplot(six_year, label.size = 5)
+# plot coefficients of models, none include zero
+coef_plot <-
+  ggplot(p_model_out_model_and_confint) +
+  aes(y =Estimate,
+      x = fct_rev(name_and_p)) +
+  geom_pointrange(aes(ymin = `2.5 %`,
+                      ymax = `97.5 %`)) +
+  scale_y_continuous(
+                     name = "Estimate and 95% CI") +
+  geom_hline(yintercept = 0,
+             colour = "red") +
+  xlab("") +
+  coord_flip( ylim = c(-3, 3)) +
+  theme_bw(base_size = 8)
 
 
-#save the diagnostic plots
-pngfile_7 <- here::here("analysis/figures/005-6-year-lag-diagnostic.png")
-jpgfile_7 <- here::here("analysis/figures/005-6-year-lag-diagnostic.jpg")
-
-
-# write PNG file with desired size and resolution
-agg_png(pngfile_7,
-        width = 13,
-        height = 10,
-        units = "cm",
-        res = 1000,
-        scaling = 0.5)
-
-print(p_7)
-
-invisible(dev.off())
-
-# convert PNG to JPG
-img_in_7 <- image_read(pngfile_7)
-png_7_jpg_7 <- image_convert(img_in_7, "jpg")
-image_write(png_7_jpg_7, jpgfile_7, density = 1000, quality = 100)
-
-
-# looks like a significant correlation at the 5 and 6 year lag, get the details
-
-# five year lag
-saa_protest_five_year_aov <-  aov(value ~ n, data = saa_and_protest_history_tbl_5yr)
-saa_protest_five_year_lm <- lm(value ~ n, data = saa_and_protest_history_tbl_5yr)
-
-apa::anova_apa(saa_protest_five_year_aov)
-ha_and_history_tbl_5yr_lm_summary <- summary(saa_protest_five_year_lm)
-
-adjusted_r_squared <- ha_and_history_tbl_5yr_lm_summary$adj.r.squared
-
-# six year lag
-saa_protest_six_year_aov <-  aov(value ~ n, data = saa_and_protest_history_tbl_6yr)
-saa_protest_six_year_lm <- lm(value ~ n, data = saa_and_protest_history_tbl_6yr)
-
-apa::anova_apa(saa_protest_six_year_aov)
-ha_and_history_tbl_6yr_lm_summary <- summary(saa_protest_six_year_lm)
-
-adjusted_r_squared <- ha_and_history_tbl_6yr_lm_summary$adj.r.squared
 
 }
 

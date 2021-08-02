@@ -219,6 +219,13 @@
       "Repository": "CRAN",
       "Hash": "9addc7e2c5954eca5719928131fed98c"
     },
+    "bmp": {
+      "Package": "bmp",
+      "Version": "0.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "c71b569d923cdc420491907928595aca"
+    },
     "bookdown": {
       "Package": "bookdown",
       "Version": "0.22",
@@ -442,6 +449,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "a0cbe758a531d054b537d16dff4d58a1"
+    },
+    "downloader": {
+      "Package": "downloader",
+      "Version": "0.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "f4f2a915e0dedbdf016a83b63477349f"
     },
     "dplyr": {
       "Package": "dplyr",
@@ -776,6 +790,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "7b1f856410253d56ea67ad808f7cdff6"
+    },
+    "imager": {
+      "Package": "imager",
+      "Version": "0.42.10",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "bf7ad2f68bdfe717b11d2bfedfe47b9e"
     },
     "ini": {
       "Package": "ini",
@@ -1270,6 +1291,13 @@
       "Repository": "CRAN",
       "Hash": "ed95895886dab6d2a584da45503555da"
     },
+    "readbitmap": {
+      "Package": "readbitmap",
+      "Version": "0.1.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "ec19e2be05f06df441857070a456dbe5"
+    },
     "readr": {
       "Package": "readr",
       "Version": "1.4.0",
@@ -1589,6 +1617,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "fc4c72b6ae9bb283416bd59a3303bbab"
+    },
+    "tiff": {
+      "Package": "tiff",
+      "Version": "0.1-8",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "cdd853102f8a8ce2396fde46e060ecc3"
     },
     "tinytex": {
       "Package": "tinytex",
