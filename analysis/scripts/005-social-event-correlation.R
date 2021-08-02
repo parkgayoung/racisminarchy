@@ -366,10 +366,14 @@ saa_and_protest_history_tbl_5yr <-
   saa_and_protest_history_tbl %>%
   filter(name == "5 year lag")
 
+row.names(saa_and_protest_history_tbl_5yr) <- saa_and_protest_history_tbl_5yr$year
 five_year <- lm(value ~ n, data = saa_and_protest_history_tbl_5yr)
+
 summary(five_year)
+
 library(ggfortify)
 p_6 <- autoplot(five_year, label.size = 5)
+
 
 #save the diagnostic plots
 pngfile_6 <- here::here("analysis/figures/005-5-year-lag-diagnostic.png")
@@ -403,14 +407,14 @@ saa_and_protest_history_tbl_6yr <-
 
 six_year <- lm(value ~ n, data = saa_and_protest_history_tbl_6yr)
 summary(six_year)
-library(ggfortify)
+
 p_7 <- autoplot(six_year, label.size = 5)
+
 
 #save the diagnostic plots
 pngfile_7 <- here::here("analysis/figures/005-6-year-lag-diagnostic.png")
 jpgfile_7 <- here::here("analysis/figures/005-6-year-lag-diagnostic.jpg")
 
-library(ragg)
 
 # write PNG file with desired size and resolution
 agg_png(pngfile_7,
@@ -425,7 +429,6 @@ print(p_7)
 invisible(dev.off())
 
 # convert PNG to JPG
-library(magick)
 img_in_7 <- image_read(pngfile_7)
 png_7_jpg_7 <- image_convert(img_in_7, "jpg")
 image_write(png_7_jpg_7, jpgfile_7, density = 1000, quality = 100)
