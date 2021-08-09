@@ -579,7 +579,7 @@ p_6 <-
 library(ggfortify)
 
 # write PNG file with desired size and resolution
-agg_png(here::here("analysis/figures/005-model-diagnostic-1.png"),
+agg_png(here::here("analysis/figures/999-model-diagnostic-saa-soc-1-yr.png"),
         width = 13,
         height = 10,
         units = "cm",
@@ -591,7 +591,7 @@ print(autoplot(best_fit_out_model_and_confint$i_model[[1]]))
 invisible(dev.off())
 
 # write PNG file with desired size and resolution
-agg_png(here::here("analysis/figures/005-model-diagnostic-2.png"),
+agg_png(here::here("analysis/figures/999-model-diagnostic-saa-protest-5-yr.png"),
         width = 13,
         height = 10,
         units = "cm",
