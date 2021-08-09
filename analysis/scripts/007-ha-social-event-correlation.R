@@ -390,21 +390,26 @@ p_ha <-
     ncol = 1
   )
 
+# diagnostic plots for the regression models
+
 # write PNG file with desired size and resolution
-agg_png(here::here("analysis/figures/005-model-diagnostic-ha-1.png"),
+library(ragg)
+agg_png(here::here("analysis/figures/999-model-diagnostic-ha-protest-2-yr.png"),
         width = 13,
         height = 10,
         units = "cm",
         res = 1000,
         scaling = 0.5)
 
+library(ggfortify)
+
 # HA 2 year lag with protest events
-print(autoplot(ha_p_model_out_model_and_confint_rsq$i_model[[2]]))
+print(autoplot(ha_p_model_out_model_and_confint_rsq$zi_model[[2]]))
 
 invisible(dev.off())
 
 # write PNG file with desired size and resolution
-agg_png(here::here("analysis/figures/005-model-diagnostic-ha-2.png"),
+agg_png(here::here("analysis/figures/999-model-diagnostic-ha-protest-3-yr.png"),
         width = 13,
         height = 10,
         units = "cm",
@@ -412,7 +417,7 @@ agg_png(here::here("analysis/figures/005-model-diagnostic-ha-2.png"),
         scaling = 0.5)
 
 # SAA 3 year lag with protest events
-print(autoplot(ha_p_model_out_model_and_confint_rsq$i_model[[3]]))
+print(autoplot(ha_p_model_out_model_and_confint_rsq$zi_model[[3]]))
 
 invisible(dev.off())
 

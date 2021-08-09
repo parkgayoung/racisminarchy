@@ -140,7 +140,7 @@ saa_and_history_tbl <-
     `5 year lag` = lag(saa_wordcount, 5),
     `6 year lag` = lag(saa_wordcount, 6)
     ) %>%
-  select(-saa_wordcount,
+  dplyr::select(-saa_wordcount,
          -`Same year`)  %>%
   pivot_longer(-c(year, n)) %>%
   replace_na(list(value = 0)) %>%
@@ -163,14 +163,14 @@ n_events_subset <-
 event_all_tbl_tally %>%
   right_join(saa_words_per_year) %>%
   arrange(year) %>%
-  filter(saa_wordcount != 0) %>%
+  dplyr::filter(saa_wordcount != 0) %>%
   pull(n) %>%
   sum(na.rm = TRUE)
 
 # how many events per plot?
 saa_and_history_tbl_per_lag_plot <-
 saa_and_history_tbl %>%
-  filter(value != 0) %>%
+  dplyr::filter(value != 0) %>%
   group_by(name) %>%
   summarise(n_events_ = sum(n, na.rm = TRUE),
             n_words_ = sum(value, na.rm = TRUE))
@@ -205,21 +205,92 @@ library(MASS)
 # zeroinfl( dist = "negbin" )  min BIC 177.64 ok
 
 # compute models
+compare_models_out <-
+  saa_and_history_tbl %>%
+  nest(-name) %>%
+  mutate(glm.nb = map(data, ~(glm.nb(value ~ n,
+                                        data = .x)))) %>%
+  mutate(glm.p = map(data, ~(glm(value ~ n,
+                                 family = "poisson",
+                                     data = .x)))) %>%
+  mutate(zeroinfl.p = map(data, ~(zeroinfl(value ~ n,
+                                           dist = "poisson",
+                                 data = .x)))) %>%
+
+  mutate(zeroinfl.nb = map(data, ~(zeroinfl(value ~ n,
+                                           dist = "negbin",
+                                           data = .x))))
+# inspect fits
+png(here::here("analysis/figures/999-model-selection-glm.nb.png"),
+    width = 7,
+    height = 5,
+    units = "in",
+    res = 300)
+par(mfrow = c(2,3))
+map2(compare_models_out$glm.nb,
+     compare_models_out$name,
+    ~countreg::rootogram(.x, main = as.character(.y)))
+dev.off()
+
+png(here::here("analysis/figures/999-model-selection-glm.p.png"),
+    width = 7,
+    height = 5,
+    units = "in",
+    res = 300)
+par(mfrow = c(2,3))
+map2(compare_models_out$glm.p,
+     compare_models_out$name,
+     ~countreg::rootogram(.x, main = as.character(.y)))
+dev.off()
+
+png(here::here("analysis/figures/999-model-selection-zeroinfl.p.png"),
+    width = 7,
+    height = 5,
+    units = "in",
+    res = 300)
+par(mfrow = c(2,3))
+map2(compare_models_out$zeroinfl.p,
+     compare_models_out$name,
+     ~countreg::rootogram(.x, main = as.character(.y)))
+dev.off()
+
+png(here::here("analysis/figures/999-model-selection-zeroinfl.nb.png"),
+    width = 7,
+    height = 5,
+    units = "in",
+    res = 300)
+par(mfrow = c(2,3))
+map2(compare_models_out$zeroinfl.nb,
+     compare_models_out$name,
+     ~countreg::rootogram(.x, main = as.character(.y)))
+dev.off()
+
+# choose glm.nb based on these plots
+
+# check BIC values to compare models
+models <- c("glm.nb", "glm.p", "zeroinfl.p", "zeroinfl.nb")
+
+model_summaries_list <-
+  map(models, ~map_df(compare_models_out[[.x]], vcdExtra::LRstats))
+
+names(model_summaries_list) <- models
+
+ model_summaries_list %>%
+  bind_rows(.id = "model") %>%
+   group_by(model) %>%
+   summarise(mean_bic = mean(BIC)) %>%
+   arrange((mean_bic))
+
+# smallest mean BIC comes from glm.nb, confirming that as a good choice
+
+# compute models
 model_out <-
   saa_and_history_tbl %>%
   nest(-name) %>%
   mutate(the_model = map(data, ~(glm.nb(value ~ n,
                                      data = .x))))
 
-# inspect fit
-par(mfrow = c(2,3))
-map(model_out$the_model,  countreg::rootogram)
-dev.off()
 
-# check BIC values to compare models
-map(model_out$the_model,  vcdExtra::LRstats) %>%
-  bind_rows() %>%
-  arrange((BIC))
 
 # use best fitting model and compute linear models
 best_fit_out <-
@@ -508,7 +579,7 @@ p_6 <-
 library(ggfortify)
 
 # write PNG file with desired size and resolution
-agg_png(here::here("analysis/figures/005-model-diagnostic-1.png"),
+agg_png(here::here("analysis/figures/999-model-diagnostic-saa-soc-1-yr.png"),
         width = 13,
         height = 10,
         units = "cm",
@@ -520,7 +591,7 @@ print(autoplot(best_fit_out_model_and_confint$i_model[[1]]))
 invisible(dev.off())
 
 # write PNG file with desired size and resolution
-agg_png(here::here("analysis/figures/005-model-diagnostic-2.png"),
+agg_png(here::here("analysis/figures/999-model-diagnostic-saa-protest-5-yr.png"),
         width = 13,
         height = 10,
         units = "cm",
