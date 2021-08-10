@@ -55,7 +55,7 @@ knitr::opts_chunk$set(
 
 <!-- The actual document text starts here: -->
 
-```{r 001-word-stats-plots}
+```{r 001-word-stats-plots, }
 knitr::include_graphics(here::here("analysis/figures/001-keyword-time-series.jpg"))
 ```
 
