@@ -1,4 +1,7 @@
 
+make_ha_topic_model_fn <- function(){
+
+library(tidyverse)
 library(quanteda)
 library(stm)
 library(rsvd)
@@ -280,6 +283,8 @@ library(magick)
 img_in_2 <- image_read(pngfile_2)
 png_2_jpg_2 <- image_convert(img_in_2, "jpg")
 image_write(png_2_jpg_2, jpgfile_2, density = 1000, quality = 100)
+
+}
 
 
 
