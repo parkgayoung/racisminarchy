@@ -1,8 +1,12 @@
-FROM rocker/binder:4.0.5
-LABEL maintainer='Ben Marwick'
-USER root
-COPY . ${HOME}
-RUN chown -R ${NB_USER} ${HOME}
+FROM rocker/binder:4.1.2
+
+## Declares build arguments
+ARG NB_USER
+ARG NB_UID
+
+COPY --chown=${NB_USER} . ${HOME}
+
+ENV DEBIAN_FRONTEND=noninteractive
 USER ${NB_USER}
 
 
