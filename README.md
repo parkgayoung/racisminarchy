@@ -14,30 +14,22 @@ status](https://github.com/parkgayoung/racisminarchy/workflows/.github/workflows
 This repository contains the data and code for our paper, which is
 online here:
 
-<<<<<<< HEAD
+
 > G. Park, L-Y. Wang, B. Marwick, (2020) *How do archaeologists write
-=======
-> Park, G., L-Y Wang, B. Marwick, (2022) How do archaeologists write
->>>>>>> 97dd1aef381e73bcf63ff76eacb7c292e6d42620
 > about race? Computational text analysis of 41 years of Society of
-> American Archaeology Annual Meeting Abstracts. *Antiquity*
+> American Archaeology Annual Meeting Abstracts*. 
+> *Antiquity*
 > <http://doi.org/10.15184/aqy.2021.181>
 
 ### How to cite
 
 Please cite this compendium as:
 
-<<<<<<< HEAD
+
 > G. Park, L-Y. Wang, B. Marwick, (2020), (2021). *Compendium of R code
 > and data for How do archaeologists write about race? Computational
 > text analysis of 41 years of Society of American Archaeology Annual
 > Meeting Abstracts*. Accessed 21 Jun 2021. Online at
-=======
-> Park, G., L-Y Wang, B. Marwick (2022). *Compendium of R code and data
-> for How do archaeologists write about race? Computational text
-> analysis of 41 years of Society of American Archaeology Annual Meeting
-> Abstracts*. Accessed 28 Apr 2022. Online at
->>>>>>> 97dd1aef381e73bcf63ff76eacb7c292e6d42620
 > <https://doi.org/10.17605/OSF.IO/2N3RF>
 
 ## Contents
