@@ -4,6 +4,7 @@ FROM rocker/verse:4.0.2
 # required
 MAINTAINER Ben Marwick <benmarwick@gmail.com>
 
+WORKDIR /racisminarchy
 COPY . /racisminarchy
 
 # go into the repo directory
