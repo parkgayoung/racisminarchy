@@ -45,11 +45,7 @@ The most important parts of the compendium, for most users, are:
     the analysis.
 -   [:file_folder: analysis/data](/analysis/data): Data used in the
     analysis.
-<<<<<<< HEAD
--   [:file\_folder: analysis/figures](/analysis/figures): Plots and
-=======
 -   [:file_folder: analysis/figures)](/analysis/figures): Plots and
->>>>>>> 97dd1aef381e73bcf63ff76eacb7c292e6d42620
     other illustrations
 -   [:file_folder: analysis/paper](/analysis/paper): R Markdown document
     that combines our narrative text and code
